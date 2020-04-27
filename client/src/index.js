@@ -11,12 +11,14 @@ import store from './store';
 import App from './App';
 import AlertContainer from "./containers/AlertContainer";
 import theme from './theme';
+import TopAppBar from './containers/TopAppBar';
 
 
 ReactDOM.render(
   <Provider store={store}>
       <ThemeProvider theme={theme}>
         <Router>
+          <TopAppBar />
           <App />
           <AlertContainer />
         </Router>
