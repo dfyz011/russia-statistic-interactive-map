@@ -3,9 +3,14 @@ import ReactDOM from 'react-dom';
 import {
   BrowserRouter as Router,
 } from 'react-router-dom';
-import './index.css';
+import {
+  ThemeProvider,
+} from '@material-ui/styles';
+import { Provider } from 'react-redux';
+import store from './store';
 import App from './App';
-import * as serviceWorker from './serviceWorker';
+import AlertContainer from "./containers/AlertContainer";
+import theme from './theme';
 
 
 ReactDOM.render(
@@ -13,6 +18,7 @@ ReactDOM.render(
       <ThemeProvider theme={theme}>
         <Router>
           <App />
+          <AlertContainer />
         </Router>
       </ThemeProvider>
   </Provider>,
