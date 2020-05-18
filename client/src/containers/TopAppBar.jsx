@@ -59,8 +59,13 @@ class TopAppBar extends Component {
                 Платформа для отображения данных
               </ListSubheader>
             )}
-          >
-          </List>
+          />
+          {/* <ListItem button component={RouterLink} to="/">
+              <ListItemIcon>
+                <ListRoundedIcon />
+              </ListItemIcon>
+              <ListItemText primary="Список проектов" />
+            </ListItem> */}
         </Drawer>
       </AppBar>
     );
