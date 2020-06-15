@@ -22,7 +22,7 @@ const appRouter = require('./routes/index');
 
 
 app.use('/api', appRouter);
-const port = parseInt(process.env.PORT, 10) || 8000;
+const port = parseInt(process.env.PORT, 10) || 5000;
 app.set('port', port);
 const server = http.createServer(app);
 server.listen(port);
