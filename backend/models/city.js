@@ -2,7 +2,10 @@
 module.exports = (sequelize, DataTypes) => {
   const City = sequelize.define('City', {
     city_id: DataTypes.INTEGER,
-    reg_id: DataTypes.INTEGER,
+    reg_id: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     city_name: DataTypes.STRING,
     if_double: DataTypes.INTEGER,
     agglomeration: DataTypes.INTEGER,
@@ -26,7 +29,12 @@ module.exports = (sequelize, DataTypes) => {
     ifnc: DataTypes.INTEGER,
   }, {});
   City.associate = function (models) {
-    // associations can be defined here
+    this.belongsToMany(models.Indicator, {
+      through: 'City_statistic',
+      foreignKey: {
+        name: 'city_id'
+      }
+    });
   };
   return City;
 };
