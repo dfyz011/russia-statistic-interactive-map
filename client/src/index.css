@@ -1,0 +1,44 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #f4f6f8;
+  margin: 0;
+}
+
+a {
+  text-decoration: none;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+#root {
+  background-color: white;
+  min-height: 100vh;
+  height: 100%;
+}
+
+.region:hover {
+  fill: #999 !important;
+  outline: none;
+}
+
+.active{
+  fill: #999 !important;
+}
+
+.chip{
+  padding: 0 3px 3px 0;
+}
+
