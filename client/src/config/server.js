@@ -1,6 +1,6 @@
 const config = {
   protocol: 'http',
-  server: 'localhost',
+  server: '127.0.0.1',
   port: '5000',
 };
 
