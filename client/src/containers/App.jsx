@@ -1,0 +1,189 @@
+import React, { useState, useEffect } from 'react';
+import {
+  Tabs,
+  Tab,
+  Paper,
+  Box,
+  Typography,
+  Container,
+  LinearProgress,
+} from '@material-ui/core';
+import { connect } from 'react-redux';
+import { getIndicators } from '../actions/indicatorsAction';
+import { getCategories } from '../actions/categoriesAction';
+
+import { getStatisticByIndicator } from '../actions/statisticAction';
+
+import MapTab from './MapTab';
+import TableTab from './TableTab';
+import RegionStatisticTab from './RegionStatisticTab';
+import DiagramsTab from './DiagramsTab';
+import IndicatorSelectorCard from '../components/IndicatorSelectorCard';
+
+// const useStyles = {
+//   formControl: {
+//     // margin: theme.spacing(1),
+//     width: '100%',
+//   },
+//   AppBar: {
+//     backgroundColor: 'gray',
+//   },
+//   chips: {
+//     display: 'flex',
+//     flexWrap: 'wrap',
+//   },
+//   chip: {
+//     margin: 2,
+//   },
+//   tableHead: {
+//     backgroundColor: 'gray',
+//     fontWeight: 'bold',
+//   },
+// };
+
+function TabPanel(props) {
+  const {
+    children, value, index, ...other
+  } = props;
+
+  return (
+    <Typography
+      component="div"
+      role="tabpanel"
+      hidden={value !== index}
+      id={`tabpanel-${index}`}
+      aria-labelledby={`tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box p={3}>{children}</Box>}
+    </Typography>
+  );
+}
+
+function getTabProps(index) {
+  return {
+    id: `tab-${index}`,
+    'aria-controls': `tabpanel-${index}`,
+    value: index,
+  };
+}
+
+function App({
+  statistic,
+  indicators,
+  getIndicators,
+  categories,
+  getCategories,
+  years,
+  getStatisticByIndicator,
+  regions,
+  isLoading,
+}) {
+  console.log(years);
+  const [currentTab, setCurrentTab] = useState('map');
+
+  const [currentIndicator, setCurrentIndicator] = useState(
+    indicators[0] || null,
+  );
+
+  const [selectedCatogories, setSelectedCatogories] = React.useState([]);
+
+  useEffect(() => {
+    setCurrentIndicator(indicators[0]);
+  }, [indicators]);
+
+  useEffect(() => {
+    if (currentIndicator) {
+      getStatisticByIndicator({ indicator: currentIndicator });
+    }
+  }, [currentIndicator]);
+
+  useEffect(() => {
+    if (!categories || categories.length === 0) getCategories();
+  }, []);
+
+  useEffect(() => {
+    getIndicators(selectedCatogories);
+  }, [selectedCatogories]);
+
+
+  const handleTabChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
+
+  const handleCurrentIndicatorChange = (event, newValue) => {
+    setCurrentIndicator(newValue);
+  };
+
+  const handleSelectedCatogories = (event, newValue) => {
+    setSelectedCatogories(newValue);
+  };
+
+  return (
+    <Box>
+      <Container>
+        <IndicatorSelectorCard
+          handleSelectedCatogories={handleSelectedCatogories}
+          categories={categories}
+          selectedCatogories={selectedCatogories}
+          currentIndicator={currentIndicator}
+          handleCurrentIndicatorChange={handleCurrentIndicatorChange}
+          indicators={indicators}
+        />
+      </Container>
+      <Container style={{ paddingTop: 20 }}>
+        <Paper elevation={3} square>
+          <Tabs
+            value={currentTab}
+            onChange={handleTabChange}
+            indicatorColor="primary"
+            textColor="primary"
+            variant="fullWidth"
+          >
+            <Tab label="Карта" {...getTabProps('map')} />
+            <Tab label="Диаграмма" {...getTabProps('diagramm')} />
+            <Tab label="Региональная статистика" {...getTabProps('region-statistic')} />
+            <Tab label="Исходные данные" {...getTabProps('source-data')} />
+          </Tabs>
+          {
+          isLoading ? (<LinearProgress />)
+            : (
+              <>
+                <TabPanel value={currentTab} index="map">
+                  <MapTab currentIndicator={currentIndicator} years={years} />
+                </TabPanel>
+                <TabPanel value={currentTab} index="diagramm">
+                  <DiagramsTab currentIndicator={currentIndicator} years={years} regions={regions} />
+                </TabPanel>
+                <TabPanel value={currentTab} index="region-statistic">
+                  <RegionStatisticTab years={years} regions={regions} />
+                </TabPanel>
+                <TabPanel value={currentTab} index="source-data">
+                  <TableTab currentIndicator={currentIndicator} statistic={statistic} years={years} regions={regions} />
+                </TabPanel>
+              </>
+            )
+          }
+        </Paper>
+      </Container>
+    </Box>
+  );
+}
+
+export default connect(
+  (state) => {
+    return {
+      indicators: state.indicators.indicators,
+      categories: state.categories.categories,
+      statistic: state.statistic.statistic,
+      years: state.statistic.years.map((el) => parseInt(el.year)),
+      regions: state.statistic.regions,
+      isLoading: state.loading.isLoading,
+    };
+  },
+  {
+    getIndicators,
+    getCategories,
+    getStatisticByIndicator,
+  },
+)(App);
