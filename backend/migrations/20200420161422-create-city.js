@@ -9,8 +9,12 @@ module.exports = {
         type: Sequelize.INTEGER
       },
       reg_id: {
+        type: Sequelize.INTEGER,
         allowNull: false,
-        type: Sequelize.STRING
+        references: {
+          model: 'Regions',
+          key: 'reg_ID'
+        }
       },
       city_name: {
         type: Sequelize.INTEGER
@@ -75,6 +79,14 @@ module.exports = {
       ifnc: {
         type: Sequelize.INTEGER
       },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
     });
   },
   down: (queryInterface, Sequelize) => {

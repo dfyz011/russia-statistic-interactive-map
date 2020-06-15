@@ -2,87 +2,94 @@
 module.exports = {
   up: (queryInterface, Sequelize) => {
     return queryInterface.createTable('Regions', {
-      reg_id: {
+      reg_ID: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
         type: Sequelize.INTEGER
       },
       reg_alias_the_constitutional_name: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_human_name: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_okato: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_iso_code: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_tableau: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_datawrapper: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_datwrapper_square: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_tile_column: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_tile_row: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_short_2letters: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_short_3letters: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_fo: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_mask: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_antimask: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_rosbris_ID: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_duckconsulting: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_fedstat: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_fias_name: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_fias_id: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_alias_rossstat_order: {
-        type: Sequelize.INTEGER
-      },
-      reg_type: {
-        type: Sequelize.INTEGER
-      },
-      reg_status: {
-        type: Sequelize.INTEGER
-      },
-      reg_alias_citytable: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
       reg_level: {
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING
       },
-      ifnc: {
-        type: Sequelize.INTEGER
+      reg_type: {
+        type: Sequelize.STRING
       },
+      reg_status: {
+        type: Sequelize.STRING
+      },
+      reg_alias_citytable: {
+        type: Sequelize.STRING
+      },
+      reg_kladr_id: {
+        type: Sequelize.STRING
+      },
+      createdAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      },
+      updatedAt: {
+        allowNull: false,
+        type: Sequelize.DATE
+      }
     });
   },
   down: (queryInterface, Sequelize) => {
