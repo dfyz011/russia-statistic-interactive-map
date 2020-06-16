@@ -11,13 +11,23 @@ import {
 } from '@material-ui/core';
 
 
-const MapAnimation = ({ setSelectedYear, years, year }) => {
+const MapAnimation = ({
+  setSelectedYear,
+  years,
+  year,
+  onPlayClick,
+  onPauseClick,
+  onStopClick,
+  onReplayClick,
+}) => {
+  const marks = years.map((el) => ({ value: el }));
   return (
     <>
       <Grid container justify="center">
         <Grid item xs={4}>
           <Slider
             min={years[0]}
+            marks={marks}
             max={years[years.length - 1]}
             value={year}
             onChange={(e, newValue) => setSelectedYear(newValue)}
@@ -27,16 +37,28 @@ const MapAnimation = ({ setSelectedYear, years, year }) => {
         </Grid>
       </Grid>
       <Grid container justify="center">
-        <IconButton aria-label="play">
+        <IconButton
+          aria-label="play"
+          onClick={onPlayClick}
+        >
           <PlayArrowSharpIcon />
         </IconButton>
-        <IconButton aria-label="pause">
+        <IconButton
+          aria-label="pause"
+          onClick={onPauseClick}
+        >
           <PauseSharpIcon />
         </IconButton>
-        <IconButton aria-label="stop">
+        <IconButton
+          aria-label="stop"
+          onClick={onStopClick}
+        >
           <StopSharpIcon />
         </IconButton>
-        <IconButton aria-label="replay">
+        <IconButton
+          aria-label="replay"
+          onClick={onReplayClick}
+        >
           <ReplaySharpIcon />
         </IconButton>
       </Grid>

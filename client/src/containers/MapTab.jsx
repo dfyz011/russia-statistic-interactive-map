@@ -10,6 +10,10 @@ import IndicatorModal from '../components/IndicatorModal';
 import StatisticHeader from '../components/StatisticHeader';
 import { getStatisticByIndicator, getStatisticForMap } from '../actions/statisticAction';
 
+function timeout(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 const MapTab = ({
   currentIndicator,
   getStatisticForMap,
@@ -19,6 +23,8 @@ const MapTab = ({
   const [selectedYear, setSelectedYear] = React.useState(0);
 
   const [tooltip, setTooltip] = useState(null);
+
+  const [isAnimating, setIsAnimating] = useState(false);
 
   useEffect(() => {
     if (years && years.length > 0) {
@@ -31,6 +37,49 @@ const MapTab = ({
       getStatisticForMap(currentIndicator);
     }
   }, [currentIndicator]);
+
+  const ProcessAnimation = async () => {
+    console.log('ProcessAnimation', selectedYear);
+    const currentPosition = years.findIndex((year) => year === selectedYear);
+    console.log('currentPosition', currentPosition);
+    const newPosition = currentPosition + 1;
+    if (newPosition >= years.length) {
+      setIsAnimating(false);
+      return;
+    }
+    console.log('years[newPosition]', years[newPosition]);
+    setSelectedYear(years[newPosition]);
+    await timeout(500);
+    console.log('isAnimating', isAnimating);
+    if (isAnimating) ProcessAnimation();
+  };
+
+  useEffect(() => {
+    if (isAnimating) {
+      ProcessAnimation();
+    }
+  }, [isAnimating]);
+
+  const onPlayClick = () => {
+    setIsAnimating(true);
+  };
+
+  const onPauseClick = () => {
+    console.log('onPauseClick', isAnimating);
+    setIsAnimating(false);
+  };
+
+  const onStopClick = () => {
+    console.log('onStopClick', isAnimating);
+    setIsAnimating(false);
+    setSelectedYear(years[0]);
+  };
+
+  const onReplayClick = () => {
+    console.log('onReplayClick', isAnimating);
+    setSelectedYear(years[0]);
+    setIsAnimating(true);
+  };
 
   return (
     <>
@@ -59,7 +108,15 @@ const MapTab = ({
         handleTooltipChange={setTooltip}
         currentIndicator={currentIndicator}
       />
-      <MapAnimation setSelectedYear={setSelectedYear} years={years} year={selectedYear} />
+      <MapAnimation
+        setSelectedYear={setSelectedYear}
+        years={years}
+        year={selectedYear}
+        onPlayClick={onPlayClick}
+        onPauseClick={onPauseClick}
+        onStopClick={onStopClick}
+        onReplayClick={onReplayClick}
+      />
       <Divider />
       <ReactTooltip
         id="global"
