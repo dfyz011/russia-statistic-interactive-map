@@ -37,7 +37,6 @@ const RadarDiagram = ({ diagramStatistic }) => {
   //   region: 'History', 2014: 65, 2015: 85, fullMark: 150,
   // },
 
-  console.log('diagramStatistic', diagramStatistic);
   // const formattedDiagramStatistic = diagramStatistic.reduce((a, yearStatistic) => {
   //   const newObj = Object.keys(yearStatistic.filter((key) => key !== 'year')).reduce((b, value) => {
   //     b[value] = b[value] || {};

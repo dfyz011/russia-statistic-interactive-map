@@ -23,14 +23,12 @@ const IndicatorRating = ({
 
 
   useEffect(() => {
-    console.log('useEffectyears', years);
     if (selectedYear === null && years && years.length > 0) {
       setSelectedYear(years[0]);
     }
   }, [years]);
 
   useEffect(() => {
-    console.log('useEffectindicator', indicators);
     if (selectedIndicator === null && indicators && indicators.length > 0) {
       setSelectedIndicator(indicators[0]);
     }
@@ -38,7 +36,6 @@ const IndicatorRating = ({
 
   useEffect(() => {
     if (selectedIndicator !== null && selectedYear !== null) {
-      console.log('getStatisticForRegionTop');
       getStatisticForIndicatorTop({ year: selectedYear, indicator: selectedIndicator });
     }
   }, [selectedYear, selectedIndicator]);

@@ -39,18 +39,14 @@ const MapTab = ({
   }, [currentIndicator]);
 
   const ProcessAnimation = async () => {
-    console.log('ProcessAnimation', selectedYear);
     const currentPosition = years.findIndex((year) => year === selectedYear);
-    console.log('currentPosition', currentPosition);
     const newPosition = currentPosition + 1;
     if (newPosition >= years.length) {
       setIsAnimating(false);
       return;
     }
-    console.log('years[newPosition]', years[newPosition]);
     setSelectedYear(years[newPosition]);
     await timeout(500);
-    console.log('isAnimating', isAnimating);
     if (isAnimating) ProcessAnimation();
   };
 
@@ -65,18 +61,15 @@ const MapTab = ({
   };
 
   const onPauseClick = () => {
-    console.log('onPauseClick', isAnimating);
     setIsAnimating(false);
   };
 
   const onStopClick = () => {
-    console.log('onStopClick', isAnimating);
     setIsAnimating(false);
     setSelectedYear(years[0]);
   };
 
   const onReplayClick = () => {
-    console.log('onReplayClick', isAnimating);
     setSelectedYear(years[0]);
     setIsAnimating(true);
   };
@@ -108,7 +101,7 @@ const MapTab = ({
         handleTooltipChange={setTooltip}
         currentIndicator={currentIndicator}
       />
-      <MapAnimation
+      {/* <MapAnimation
         setSelectedYear={setSelectedYear}
         years={years}
         year={selectedYear}
@@ -116,7 +109,7 @@ const MapTab = ({
         onPauseClick={onPauseClick}
         onStopClick={onStopClick}
         onReplayClick={onReplayClick}
-      />
+      /> */}
       <Divider />
       <ReactTooltip
         id="global"

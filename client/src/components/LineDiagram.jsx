@@ -42,8 +42,6 @@ const LineDiagram = ({ diagramStatistic }) => {
   //   return {...a,[stat]: 1}
   // },{});
 
-  console.log('colors', colors);
-  console.log('yKeys', opacity);
   return (
     <>
       <ResponsiveContainer>

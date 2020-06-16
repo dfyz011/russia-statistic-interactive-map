@@ -26,7 +26,6 @@ export const getIndicators = (categories = []) => async dispatch => {
     if (json.error) {
       throw new Error(json.message);
     }
-    console.log('json', json);
     dispatch({
       type: GET_INDICATORS,
       payload: {

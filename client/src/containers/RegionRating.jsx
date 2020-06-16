@@ -23,14 +23,12 @@ const RegionRating = ({
 
 
   useEffect(() => {
-    console.log('useEffectyears', years);
     if (selectedYear === null && years && years.length > 0) {
       setSelectedYear(years[0]);
     }
   }, [years]);
 
   useEffect(() => {
-    console.log('useEffectregions', regions);
     if (selectedRegion === null && regions && regions.length > 0) {
       setSelectedRegion(regions[0]);
     }
@@ -38,7 +36,6 @@ const RegionRating = ({
 
   useEffect(() => {
     if (selectedRegion !== null && selectedYear !== null) {
-      console.log('getStatisticForRegionTop');
       getStatisticForRegionTop({ year: selectedYear, region: selectedRegion });
     }
   }, [selectedYear, selectedRegion]);

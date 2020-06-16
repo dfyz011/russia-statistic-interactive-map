@@ -85,7 +85,6 @@ function App({
   regions,
   isLoading,
 }) {
-  console.log(years);
   const [currentTab, setCurrentTab] = useState('map');
 
   const [selectedRatingType, setSelectedRatingType] = useState('region');

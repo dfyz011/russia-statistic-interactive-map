@@ -19,7 +19,6 @@ export const getCategories = () => async dispatch => {
     if (json.error) {
       throw new Error(json.message);
     }
-    console.log('json', json);
     dispatch({
       type: GET_CATEGORIES,
       payload: {

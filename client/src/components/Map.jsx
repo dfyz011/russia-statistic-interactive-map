@@ -81,11 +81,9 @@ const Map = (props) => {
 
   const onCloseRegionPopover = (event) => {
     const active = document.querySelector('svg .active');
-    console.log('active', active);
     if (active) {
       active.classList.remove('active');
     }
-    console.log('active', active);
     setSelectedRegion(null);
   };
 
@@ -100,8 +98,6 @@ const Map = (props) => {
       active.classList.remove('active');
     }
     event.target.classList.add('active');
-    console.log('active', active);
-    console.log('event.target.classList', event.target.classList);
     setSelectedRegion(statistic);
     // setAnchorEl(event.currentTarget);
   };
