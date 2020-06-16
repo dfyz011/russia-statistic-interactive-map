@@ -50,7 +50,7 @@ import React, {
   useEffect, useRef, memo,
 } from 'react';
 import {
-  // ZoomableGroup,
+  ZoomableGroup,
   ComposableMap,
   Geographies,
   Geography,
@@ -136,14 +136,24 @@ const Map = (props) => {
           right: 0,
         }}
       >
+        <span style={
+                {
+                  fontSize: '13px',
+                  lineHeight: '20px',
+                  fontStyle: 'normal',
+                  fontWeight: 400,
+                }
+              }
+        >
+          {'Диапазоны значений'}
+        </span>
         <ul style={{ listStyle: 'none' }}>
-          {legendItems.map((item, index) => (
-            <li key={index} style={{ display: 'flex', alignItems: 'center', margin: '8px' }}>
-              <div style={{
-                background: colorScale(item), width: '16px', height: '16px', marginRight: '8px', borderRadius: '2px',
-              }}
-              />
-              <span style={
+          <li style={{ display: 'flex', alignItems: 'flex-start', margin: '8px' }}>
+            <div style={{
+              background: '#F5F4F6', width: '18px', height: '18px', marginRight: '8px', marginTop: '6px', borderRadius: '2px',
+            }}
+            />
+            <span style={
                 {
                   fontSize: '17px',
                   lineHeight: '28px',
@@ -151,9 +161,40 @@ const Map = (props) => {
                   fontWeight: 400,
                 }
               }
-              >
-                {`${item} ${(statistic.values[0] && statistic.values[0].measurement_unit) || ''}`}
-              </span>
+            >
+              {'Нет данных'}
+            </span>
+          </li>
+          {legendItems.map((item, index) => (
+            <li key={index} style={{ display: 'flex', alignItems: 'flex-start', margin: '8px' }}>
+              <div style={{
+                background: colorScale(item), width: '18px', height: '18px', marginRight: '8px', marginTop: '6px', borderRadius: '2px',
+              }}
+              />
+              <div style={{ display: 'flex', flexDirection: 'column' }}>
+                <span style={
+                {
+                  fontSize: '17px',
+                  lineHeight: '28px',
+                  fontStyle: 'normal',
+                  fontWeight: 400,
+                }
+              }
+                >
+                  {`${item || ''}`}
+                </span>
+                <span
+                  style={{
+                    fontSize: '11px',
+                    lineHeight: '16px',
+                    fontStyle: 'normal',
+                    fontWeight: 400,
+                    color: '#909ebb',
+                  }}
+                >
+                  {`${((statistic.values[1] && statistic.values[1].measurement_unit) || '')}`}
+                </span>
+              </div>
             </li>
           ))}
         </ul>
@@ -212,7 +253,9 @@ const Map = (props) => {
                   },
                 }}
                 // outline: 'none',
-                onClick={handleClick((statistic && statistic.values && statistic.values[geo.properties.id]) || null)}
+                onClick={() => {
+                  handleClick((statistic && statistic.values && statistic.values[geo.properties.id]) || null);
+                }}
               />
             );
           }))}
