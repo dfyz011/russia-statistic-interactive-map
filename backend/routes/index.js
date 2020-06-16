@@ -29,6 +29,7 @@ router.delete('/cities/:cityId', cities.delete);
 
 router.get('/statistics/region/:regionId', statistics.findByRegion);
 router.post('/statistics/indicator/:indicatorId', statistics.findByIndicator);
+router.post('/statistics/map/indicators', statistics.findByIndicatorsForMap);
 router.get('/statistics/map/indicator/:indicatorId', statistics.findByIndicatorForMap);
 router.post('/statistics/diagram/indicator/:indicatorId', statistics.findByIndicatorForDiagram);
 router.post('/statistics/radar-diagram/indicator/:indicatorId', statistics.findByIndicatorForRadarDiagram);

@@ -165,17 +165,21 @@ export const getStatisticForDiagram = ({ indicator, years = [], regions = [] }) 
   }
 };
 
-export const getStatisticForMap = (indicator, year) => async dispatch => {
+export const getStatisticForMap = (indicators) => async dispatch => {
   try {
     handleLoadingStarted();
+    const formattedIndicators = indicators.map((indicator) => indicator.id);
     const response = await fetch(
-      `${config.protocol}://${config.server}:${config.port}/api/statistics/map/indicator/${indicator.id}`,
+      `${config.protocol}://${config.server}:${config.port}/api/statistics/map/indicators`,
       {
-        method: 'get',
+        method: 'post',
         headers: {
           Authorization: localStorage.getItem('token'),
           'Content-type': 'application/json; charset=UTF-8',
         },
+        body: JSON.stringify({
+          indicators: formattedIndicators,
+        }),
       },
     );
 

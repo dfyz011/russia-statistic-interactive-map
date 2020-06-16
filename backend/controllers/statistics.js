@@ -293,6 +293,73 @@ exports.findByIndicatorForRadarDiagram = async (req, res) => {
   }
 };
 
+exports.findByIndicatorsForMap = async (req, res) => {
+  try {
+    const { indicators: rawSelectedIndicators } = req.body;
+    const indicatorsFilter = rawSelectedIndicators && rawSelectedIndicators.length > 0
+      ? { indicator_id: { [Op.in]: [...rawSelectedIndicators] } }
+      : {};
+    const regionStatisticFilter = {
+      ...indicatorsFilter,
+    };
+    const result = await Region_statistic.findAll({
+      where: regionStatisticFilter,
+      include: [
+        {
+          model: Region,
+          as: 'Region',
+          where: {
+            reg_type: 'Регион'
+          },
+        },
+        {
+          model: Indicator,
+          as: 'Indicator'
+        }
+      ],
+    });
+
+    const groupedResult = result.reduce((r, a) => {
+      r[a.year] = r[a.year] || {};
+      r[a.year][a.indicator_id] = r[a.year][a.indicator_id] || { min: Infinity, max: -Infinity, values: {} };
+      r[a.year][a.indicator_id].values[a.Region.reg_alias_fias_id] = a;
+      const currentValue = parseFloat(a.value);
+      if (currentValue > r[a.year][a.indicator_id].max) {
+        r[a.year][a.indicator_id].max = currentValue;
+      }
+      if (currentValue < r[a.year][a.indicator_id].min) {
+        r[a.year][a.indicator_id].min = currentValue;
+      }
+      return r;
+    }, {});
+    console.log('groupedResult', groupedResult);
+    const regions = await Region.findAll({
+      where: {
+        reg_type: 'Регион'
+      },
+      order: [
+        ['reg_alias_human_name', 'ASC'],
+      ],
+    });
+    const groupedRegions = regions.reduce((r, a) => {
+      r[a.reg_alias_fias_id] = a;
+      return r;
+    }, {});
+    res.json({ items: groupedResult, regions: groupedRegions });
+  } catch (err) {
+    console.error(err);
+    if (err.kind === 'not_found') {
+      res.status(404).json({
+        message: `Not found map statistic for indicator with id ${req.params.indicatorId}.`,
+      });
+    } else {
+      res.status(500).json({
+        message: `Error retrieving map statistic for indicator with id ${req.params.indicatorId}`,
+      });
+    }
+  }
+};
+
 exports.findByIndicatorForMap = async (req, res) => {
   try {
     const {

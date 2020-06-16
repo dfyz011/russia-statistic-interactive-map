@@ -54,16 +54,19 @@ import {
   ComposableMap,
   Geographies,
   Geography,
+  Marker,
+  Annotation,
   // Sphere,
   // Graticule,
 } from 'react-simple-maps';
 import ReactTooltip from 'react-tooltip';
-import { geoConicEqualArea } from 'd3-geo';
-import { scaleLinear } from 'd3-scale';
+import { geoConicEqualArea, geoCentroid } from 'd3-geo';
+import { scaleLinear, scaleQuantile, scaleQuantize } from 'd3-scale';
 import {
   Popover,
 } from '@material-ui/core';
 import IndicatorModal from './IndicatorModal';
+import { randomColor } from '../constants/helpers';
 
 const mapPath = 'russia.json';
 
@@ -89,7 +92,14 @@ const Map = (props) => {
     setSelectedRegion(null);
   };
 
-  const handleClick = (statistic) => (event) => {
+  // useEffect(() => {
+  //   const regionsSvgs = document.querySelectorAll('.rsm-geography.region');
+  //   // console.log('useEffect', regionsSvgs);
+  // });
+
+  const handleClick = (statistic, geo) => (event) => {
+    console.log('handleClick', event);
+    console.log('geo', geo);
     // if (!isTooltipOpen) {
     //   ReactTooltip.show(geographyRef);
     // } else {
@@ -106,11 +116,11 @@ const Map = (props) => {
 
   const projection = () => {
     return geoConicEqualArea()
-      .scale(280)
+      .scale(650)
       .center([0, 90])
       .parallels([40, 80])
       .rotate([265])
-      .translate([240, 0]);
+      .translate([430, 0]);
   };
 
   const colorScale = (value) => {
@@ -118,6 +128,7 @@ const Map = (props) => {
       .domain([statistic.min, statistic.max])
       .range(['#ffedea', '#ff5233']))(value) : '#F5F4F6';
   };
+
   const legendItemsCount = 5;
 
   const step = statistic && statistic.max ? (statistic.max - statistic.min) / (legendItemsCount - 1) : 0;
@@ -201,8 +212,8 @@ const Map = (props) => {
       </div>
       <ComposableMap
         projection={projection()}
-        width={500}
-        height={200}
+        width={900}
+        height={450}
         style={{
           width: '100%',
           height: 'auto',
@@ -222,44 +233,50 @@ const Map = (props) => {
           // data-event-off="mouseleave"
           data-for="global"
         >
-          {({ geographies }) => (geographies.map((geo, i) => {
-            const color = statistic
+          {({ geographies }) => (
+            <>
+              {geographies.map((geo, i) => {
+                const color = statistic
                 && Object.keys(statistic.values).length > 0
                 && statistic.values[geo.properties.id]
-              ? colorScale(statistic.values[geo.properties.id].value) : '#F5F4F6';
-            return (
-              <Geography
-                key={geo.rsmKey}
-                onMouseEnter={() => {
-                  handleTooltipChange(statistic.values[geo.properties.id] || { Region: regions[geo.properties.id], year: selectedYear });
-                }}
-                onMouseLeave={() => {
-                  handleTooltipChange(null);
-                }}
-                className="region"
-                geography={geo}
-                style={{
-                  default: {
-                    fill: color,
-                    outline: 'none',
-                  },
-                  pressed: {
-                    fill: color,
-                    outline: 'none',
-                  },
-                  hover: {
-                    fill: color,
-                    outline: 'none',
-                  },
-                }}
+                  ? colorScale(statistic.values[geo.properties.id].value) : '#F5F4F6';
+                return (
+                  <Geography
+                    key={geo.rsmKey}
+                    onMouseEnter={() => {
+                      handleTooltipChange(statistic.values[geo.properties.id] || { Region: regions[geo.properties.id], year: selectedYear });
+                    }}
+                    onMouseLeave={() => {
+                      handleTooltipChange(null);
+                    }}
+                    className="region"
+                    geography={geo}
+                    style={{
+                      default: {
+                        fill: color,
+                        outline: 'none',
+                      },
+                      pressed: {
+                        fill: color,
+                        outline: 'none',
+                      },
+                      hover: {
+                        fill: color,
+                        outline: 'none',
+                      },
+                    }}
                 // outline: 'none',
-                onClick={
-                  handleClick((statistic && statistic.values && statistic.values[geo.properties.id]) || null)
-                 }
-              />
-            );
-          }))}
+                    onClick={
+                      handleClick((statistic && statistic.values && statistic.values[geo.properties.id]) || null, geo)
+                    }
+                  />
+                );
+              })}
+            </>
+          )}
         </Geographies>
+
+
         {/* </ZoomableGroup> */}
       </ComposableMap>
       <Popover
@@ -276,7 +293,11 @@ const Map = (props) => {
         onClose={onCloseRegionPopover}
       >
         <div style={{ padding: '18px 24px' }}>
-          <IndicatorModal selectedRegion={selectedRegion} currentIndicator={currentIndicator} onClose={onCloseRegionPopover} />
+          <IndicatorModal
+            selectedRegion={selectedRegion}
+            currentIndicator={currentIndicator}
+            onClose={onCloseRegionPopover}
+          />
         </div>
       </Popover>
     </div>

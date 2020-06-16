@@ -107,7 +107,7 @@ function App({
 
   useEffect(() => {
     if (!categories || categories.length === 0) getCategories();
-  }, []);
+  });
 
   useEffect(() => {
     getIndicators(selectedCatogories);
@@ -161,10 +161,18 @@ function App({
             : (
               <>
                 <TabPanel value={currentTab} index="map">
-                  <MapTab currentIndicator={currentIndicator} years={years} />
+                  <MapTab
+                    currentIndicator={currentIndicator}
+                    years={years}
+                    indicators={indicators}
+                  />
                 </TabPanel>
                 <TabPanel value={currentTab} index="diagramm">
-                  <DiagramsTab currentIndicator={currentIndicator} years={years} regions={regions} />
+                  <DiagramsTab
+                    currentIndicator={currentIndicator}
+                    years={years}
+                    regions={regions}
+                  />
                 </TabPanel>
                 <TabPanel value={currentTab} index="rating">
                   <FormControl component="fieldset" fullWidth>
@@ -188,7 +196,12 @@ function App({
                   }
                 </TabPanel>
                 <TabPanel value={currentTab} index="source-data">
-                  <TableTab currentIndicator={currentIndicator} statistic={statistic} years={years} regions={regions} />
+                  <TableTab
+                    currentIndicator={currentIndicator}
+                    statistic={statistic}
+                    years={years}
+                    regions={regions}
+                  />
                 </TabPanel>
               </>
             )

@@ -2,13 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   Divider,
+  InputLabel,
+  FormControl,
+  Select,
+  Chip,
+  TextField,
+  Checkbox,
 } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import ReactTooltip from 'react-tooltip';
 import MapAnimation from '../components/MapAnimation';
 import Map from '../components/Map';
+import MapWithBars from '../components/MapWithBars';
 import IndicatorModal from '../components/IndicatorModal';
 import StatisticHeader from '../components/StatisticHeader';
 import { getStatisticByIndicator, getStatisticForMap } from '../actions/statisticAction';
+
+import { randomColor } from '../constants/helpers';
 
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -20,7 +30,9 @@ const MapTab = ({
   mapStatistic,
   mapRegions,
   years,
+  indicators,
 }) => {
+  const [selectedIndicators, setSelectedIndicators] = React.useState([]);
   const [selectedYear, setSelectedYear] = React.useState(0);
 
   const [tooltip, setTooltip] = useState(null);
@@ -35,9 +47,15 @@ const MapTab = ({
 
   useEffect(() => {
     if (currentIndicator && currentIndicator.id) {
-      getStatisticForMap(currentIndicator);
+      getStatisticForMap([currentIndicator]);
     }
   }, [currentIndicator]);
+
+  useEffect(() => {
+    if (selectedIndicators && selectedIndicators.length > 0) {
+      getStatisticForMap(selectedIndicators);
+    }
+  }, [selectedIndicators]);
 
   const ProcessAnimation = async () => {
     const currentPosition = years.findIndex((year) => year === selectedYear);
@@ -57,6 +75,9 @@ const MapTab = ({
     }
   }, [isAnimating]);
 
+  const handleSelectedIndicators = (event, newValue) => {
+    setSelectedIndicators(newValue);
+  };
   const onPlayClick = () => {
     setIsAnimating(true);
   };
@@ -74,6 +95,13 @@ const MapTab = ({
     setSelectedYear(years[0]);
     setIsAnimating(true);
   };
+
+  console.log('selectedIndicators', selectedIndicators);
+
+  const indicatorsColors = selectedIndicators.reduce((r, a) => {
+    r[a.id] = randomColor();
+    return r;
+  }, {});
 
   return (
     <>
@@ -96,14 +124,70 @@ const MapTab = ({
           </FormControl>
         </Grid>
       </Grid> */}
-      <StatisticHeader currentIndicator={currentIndicator} />
-      <Map
-        statistic={mapStatistic && selectedYear ? mapStatistic[selectedYear] : []}
-        regions={mapRegions}
-        selectedYear={selectedYear}
-        handleTooltipChange={setTooltip}
-        currentIndicator={currentIndicator}
+      <Autocomplete
+        options={indicators}
+        multiple
+        onChange={handleSelectedIndicators}
+        value={selectedIndicators}
+        noOptionsText="Не найдено"
+        disableCloseOnSelect
+            // renderTags={() => {}}
+            // renderTags={(value, getTagProps) => (
+            //   <div>
+            //     <span style={{ whiteSpace: 'nowrap' }}>
+            //       {`${value.map((reg) => reg.reg_alias_human_name).join(', ')}`}
+            //     </span>
+            //   </div>
+            // )}
+        renderTags={(value, getTagProps) => (
+          <div className="chips">
+            {value.map((indicator) => (
+              <Chip key={indicator.id} label={indicator.title} className="chips" />
+            ))}
+          </div>
+        )}
+        getOptionLabel={(option) => option.title}
+        renderInput={(params) => (
+          <TextField
+            {...params}
+            label="Индикаторы"
+            InputLabelProps={{ shrink: true }}
+          />
+        )}
+        renderOption={(option, { selected }) => (
+          <>
+            <Checkbox
+              style={{ marginRight: 8 }}
+              checked={selected}
+            />
+            {option.title}
+          </>
+        )}
+        getOptionSelected={(option, value) => value.id === option.id}
       />
+      <StatisticHeader currentIndicator={currentIndicator} />
+      {
+        !selectedIndicators || selectedIndicators.length === 0 ? (
+          <Map
+            statistic={mapStatistic && selectedYear
+              ? mapStatistic[selectedYear][currentIndicator.id] : []}
+            regions={mapRegions}
+            selectedYear={selectedYear}
+            handleTooltipChange={setTooltip}
+            currentIndicator={currentIndicator || {}}
+          />
+        ) : (
+          <MapWithBars
+            statistic={mapStatistic && selectedYear ? mapStatistic[selectedYear] : []}
+            regions={mapRegions}
+            selectedYear={selectedYear}
+            handleTooltipChange={setTooltip}
+            selectedIndicators={selectedIndicators}
+            indicatorsColors={indicatorsColors}
+          />
+        )
+      }
+
       <MapAnimation
         setSelectedYear={setSelectedYear}
         years={years}
