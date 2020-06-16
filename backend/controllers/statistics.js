@@ -320,7 +320,7 @@ exports.findByIndicatorForMap = async (req, res) => {
 
     const groupedResult = result.reduce((r, a) => {
       r[a.year] = r[a.year] || { min: Infinity, max: -Infinity, values: {} };
-      r[a.year].values[a.Region.reg_ID] = a;
+      r[a.year].values[a.Region.reg_alias_fias_id] = a;
       const currentValue = parseFloat(a.value);
       if (currentValue > r[a.year].max) {
         r[a.year].max = currentValue;
@@ -339,7 +339,7 @@ exports.findByIndicatorForMap = async (req, res) => {
       ],
     });
     const groupedRegions = regions.reduce((r, a) => {
-      r[a.reg_ID] = a;
+      r[a.reg_alias_fias_id] = a;
       return r;
     }, {});
     res.json({ items: groupedResult, regions: groupedRegions });
