@@ -1,23 +1,18 @@
 import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
-import SaveIcon from '@material-ui/icons/Save';
 import {
-  Button,
   ListItemText,
-  Checkbox,
-  Chip,
   MenuItem,
   FormControl,
   InputLabel,
   Select,
   Input,
   Grid,
-  Typography,
 } from '@material-ui/core';
 import RegionTable from './RegionTable';
 import { getStatisticForRegionTop } from '../actions/statisticAction';
 
-const RegionStatisticTab = ({
+const RegionRating = ({
   years,
   regions,
   getStatisticForRegionTop,
@@ -138,4 +133,4 @@ export default connect(
   {
     getStatisticForRegionTop,
   },
-)(RegionStatisticTab);
+)(RegionRating);

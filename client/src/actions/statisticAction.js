@@ -3,6 +3,7 @@ import {
   GET_MAP_STATISTIC,
   GET_DIAGRAM_STATISTIC,
   GET_REGION_TOP_STATISTIC,
+  GET_INDICATOR_TOP_STATISTIC,
   GET_RADAR_DIAGRAM_STATISTIC,
 } from '../constants/statistic';
 import config from '../config/server';
@@ -225,8 +226,43 @@ export const getStatisticForRegionTop = ({ region, year }) => async dispatch => 
       type: GET_REGION_TOP_STATISTIC,
       payload: {
         items: json.statistic,
-        years: json.years,
-        regions: json.regions,
+      },
+    });
+  } catch (err) {
+    handleError(dispatch, err);
+  } finally {
+    handleLoadingFinished();
+  }
+};
+
+export const getStatisticForIndicatorTop = ({ indicator, year }) => async dispatch => {
+  try {
+    handleLoadingStarted();
+
+    const response = await fetch(
+      `${config.protocol}://${config.server}:${config.port}/api/statistics/top/indicator/${indicator.id}`,
+      {
+        method: 'post',
+        headers: {
+          Authorization: localStorage.getItem('token'),
+          'Content-type': 'application/json; charset=UTF-8',
+        },
+        body: JSON.stringify({
+          year,
+        }),
+      },
+    );
+
+    const json = await response.json();
+
+    if (json.error) {
+      throw new Error(json.message);
+    }
+
+    dispatch({
+      type: GET_INDICATOR_TOP_STATISTIC,
+      payload: {
+        items: json.statistic,
       },
     });
   } catch (err) {

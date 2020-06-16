@@ -7,6 +7,11 @@ import {
   Typography,
   Container,
   LinearProgress,
+  FormControl,
+  Radio,
+  RadioGroup,
+  FormLabel,
+  FormControlLabel,
 } from '@material-ui/core';
 import { connect } from 'react-redux';
 import { getIndicators } from '../actions/indicatorsAction';
@@ -16,7 +21,8 @@ import { getStatisticByIndicator } from '../actions/statisticAction';
 
 import MapTab from './MapTab';
 import TableTab from './TableTab';
-import RegionStatisticTab from './RegionStatisticTab';
+import RegionRating from './RegionRating';
+import IndicatorRating from './IndicatorRating';
 import DiagramsTab from './DiagramsTab';
 import IndicatorSelectorCard from '../components/IndicatorSelectorCard';
 
@@ -82,6 +88,8 @@ function App({
   console.log(years);
   const [currentTab, setCurrentTab] = useState('map');
 
+  const [selectedRatingType, setSelectedRatingType] = useState('region');
+
   const [currentIndicator, setCurrentIndicator] = useState(
     indicators[0] || null,
   );
@@ -109,6 +117,10 @@ function App({
 
   const handleTabChange = (event, newValue) => {
     setCurrentTab(newValue);
+  };
+
+  const handleRatingType = (event, newValue) => {
+    setSelectedRatingType(newValue);
   };
 
   const handleCurrentIndicatorChange = (event, newValue) => {
@@ -142,7 +154,7 @@ function App({
           >
             <Tab label="Карта" {...getTabProps('map')} />
             <Tab label="Диаграмма" {...getTabProps('diagramm')} />
-            <Tab label="Региональная статистика" {...getTabProps('region-statistic')} />
+            <Tab label="Рейтинг" {...getTabProps('rating')} />
             <Tab label="Исходные данные" {...getTabProps('source-data')} />
           </Tabs>
           {
@@ -155,8 +167,26 @@ function App({
                 <TabPanel value={currentTab} index="diagramm">
                   <DiagramsTab currentIndicator={currentIndicator} years={years} regions={regions} />
                 </TabPanel>
-                <TabPanel value={currentTab} index="region-statistic">
-                  <RegionStatisticTab years={years} regions={regions} />
+                <TabPanel value={currentTab} index="rating">
+                  <FormControl component="fieldset" fullWidth>
+                    <FormLabel component="legend">Рейтинг по</FormLabel>
+                    <RadioGroup
+                      aria-label="rating-type"
+                      name="rating-type"
+                      value={selectedRatingType}
+                      onChange={handleRatingType}
+                      style={{ flexDirection: 'row' }}
+                    >
+                      <FormControlLabel value="region" control={<Radio />} label="Региону" />
+                      <FormControlLabel value="indicator" control={<Radio />} label="Индикатору" />
+                    </RadioGroup>
+                  </FormControl>
+                  {
+                    selectedRatingType === 'indicator'
+                      ? (<IndicatorRating years={years} indicators={indicators} />) : (
+                        <RegionRating years={years} regions={regions} />
+                      )
+                  }
                 </TabPanel>
                 <TabPanel value={currentTab} index="source-data">
                   <TableTab currentIndicator={currentIndicator} statistic={statistic} years={years} regions={regions} />

@@ -4,6 +4,7 @@ import {
   GET_DIAGRAM_STATISTIC,
   GET_RADAR_DIAGRAM_STATISTIC,
   GET_REGION_TOP_STATISTIC,
+  GET_INDICATOR_TOP_STATISTIC,
 } from '../constants/statistic';
 
 const initialState = {
@@ -45,6 +46,11 @@ export function statisticReducer(state = initialState, action) {
         regions: action.payload.regions,
       };
     case GET_REGION_TOP_STATISTIC:
+      return {
+        ...state,
+        top: action.payload.items,
+      };
+    case GET_INDICATOR_TOP_STATISTIC:
       return {
         ...state,
         top: action.payload.items,

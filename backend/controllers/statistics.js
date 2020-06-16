@@ -354,9 +354,9 @@ exports.findByRegionForTop = async (req, res) => {
       where: {
         year: selectedYear,
         region_id: parseInt(regionId),
-        indicator_id: {
-          [Op.gt]: 814
-        }
+        // indicator_id: {
+        //   [Op.gt]: 814
+        // }
       },
       include: [
         {
@@ -451,13 +451,12 @@ exports.findByIndicatorForTop = async (req, res) => {
       ],
       order: [
         ['value', 'ASC'],
-        [Indicator, 'title', 'ASC'],
+        [Region, 'reg_alias_human_name', 'ASC'],
       ],
-      limit: 20
     });
 
     const ar = result.map((stat, index) => {
-      return { ...ar, place: index + 1 };
+      return { ...stat.dataValues, place: index + 1 };
     });
     res.json({ statistic: ar });
   } catch (err) {
