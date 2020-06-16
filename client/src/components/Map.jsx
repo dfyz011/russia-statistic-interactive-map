@@ -253,9 +253,9 @@ const Map = (props) => {
                   },
                 }}
                 // outline: 'none',
-                onClick={() => {
-                  handleClick((statistic && statistic.values && statistic.values[geo.properties.id]) || null);
-                }}
+                onClick={
+                  handleClick((statistic && statistic.values && statistic.values[geo.properties.id]) || null)
+                 }
               />
             );
           }))}
