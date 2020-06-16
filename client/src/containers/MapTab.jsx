@@ -18,6 +18,7 @@ const MapTab = ({
   currentIndicator,
   getStatisticForMap,
   mapStatistic,
+  mapRegions,
   years,
 }) => {
   const [selectedYear, setSelectedYear] = React.useState(0);
@@ -98,10 +99,12 @@ const MapTab = ({
       <StatisticHeader currentIndicator={currentIndicator} />
       <Map
         statistic={mapStatistic && selectedYear ? mapStatistic[selectedYear] : []}
+        regions={mapRegions}
+        selectedYear={selectedYear}
         handleTooltipChange={setTooltip}
         currentIndicator={currentIndicator}
       />
-      {/* <MapAnimation
+      <MapAnimation
         setSelectedYear={setSelectedYear}
         years={years}
         year={selectedYear}
@@ -109,7 +112,7 @@ const MapTab = ({
         onPauseClick={onPauseClick}
         onStopClick={onStopClick}
         onReplayClick={onReplayClick}
-      /> */}
+      />
       <Divider />
       <ReactTooltip
         id="global"
@@ -141,6 +144,7 @@ export default connect(
   (state) => {
     return {
       mapStatistic: state.statistic.mapStatistic,
+      mapRegions: state.statistic.mapRegions,
     };
   },
   {

@@ -7,6 +7,7 @@ import {
 
 
 const IndicatorModal = ({ selectedRegion, currentIndicator, onClose }) => {
+  const beautifulValue = parseFloat(`${(selectedRegion && selectedRegion.value) || ''}`.replace(',', '.')).toFixed(2);
   return (
     <div style={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}>
       <div
@@ -66,7 +67,7 @@ const IndicatorModal = ({ selectedRegion, currentIndicator, onClose }) => {
             textAlign: 'center',
           }}
         >
-          {`${parseFloat(`${(selectedRegion && selectedRegion.value) || ''}`.replace(',', '.')).toFixed(2)}${(selectedRegion && selectedRegion.measurement_unit) || ''}`}
+          {`${beautifulValue !== 'NaN' ? beautifulValue : 'Данных нет'}${(selectedRegion && selectedRegion.measurement_unit) || ''}`}
         </div>
       </div>
       {/* <Typography>

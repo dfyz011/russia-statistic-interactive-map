@@ -10,6 +10,7 @@ import {
 const initialState = {
   statistic: [],
   mapStatistic: {},
+  mapRegions: {},
   diagramStatistic: [],
   radarDiagramStatistic: [],
   years: [],
@@ -30,6 +31,8 @@ export function statisticReducer(state = initialState, action) {
       return {
         ...state,
         mapStatistic: action.payload.items,
+        mapRegions: action.payload.regions,
+
       };
     case GET_DIAGRAM_STATISTIC:
       return {

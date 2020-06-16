@@ -36,7 +36,7 @@ const MapAnimation = ({
           />
         </Grid>
       </Grid>
-      <Grid container justify="center">
+      {/* <Grid container justify="center">
         <IconButton
           aria-label="play"
           onClick={onPlayClick}
@@ -61,7 +61,7 @@ const MapAnimation = ({
         >
           <ReplaySharpIcon />
         </IconButton>
-      </Grid>
+      </Grid> */}
     </>
   );
 };

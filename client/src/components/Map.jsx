@@ -72,6 +72,8 @@ const Map = (props) => {
     statistic,
     handleTooltipChange,
     currentIndicator,
+    regions,
+    selectedYear,
   } = props;
 
   // const [geographyRef, setGeographyRef] = React.useState(null);
@@ -187,7 +189,7 @@ const Map = (props) => {
               <Geography
                 key={geo.rsmKey}
                 onMouseEnter={() => {
-                  handleTooltipChange(statistic.values[geo.properties.id]);
+                  handleTooltipChange(statistic.values[geo.properties.id] || { Region: regions[geo.properties.id], year: selectedYear });
                 }}
                 onMouseLeave={() => {
                   handleTooltipChange(null);
@@ -198,24 +200,18 @@ const Map = (props) => {
                   default: {
                     fill: color,
                     outline: 'none',
-                    strokeWidth: '0.5',
-                    stroke: '#fff',
                   },
                   pressed: {
                     fill: color,
                     outline: 'none',
-                    strokeWidth: '0.5',
-                    stroke: '#fff',
                   },
                   hover: {
                     fill: color,
                     outline: 'none',
-                    strokeWidth: '0.5',
-                    stroke: '#fff',
                   },
                 }}
                 // outline: 'none',
-                onClick={handleClick(statistic && statistic.values && statistic.values[geo.properties.id] || null)}
+                onClick={handleClick((statistic && statistic.values && statistic.values[geo.properties.id]) || null)}
               />
             );
           }))}

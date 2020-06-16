@@ -327,7 +327,20 @@ exports.findByIndicatorForMap = async (req, res) => {
       }
       return r;
     }, {});
-    res.json({ items: groupedResult });
+
+    const regions = await Region.findAll({
+      where: {
+        reg_type: 'Регион'
+      },
+      order: [
+        ['reg_alias_human_name', 'ASC'],
+      ],
+    });
+    const groupedRegions = regions.reduce((r, a) => {
+      r[a.reg_ID] = a;
+      return r;
+    }, {});
+    res.json({ items: groupedResult, regions: groupedRegions });
   } catch (err) {
     console.error(err);
     if (err.kind === 'not_found') {
