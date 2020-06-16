@@ -306,7 +306,10 @@ exports.findByIndicatorForMap = async (req, res) => {
       include: [
         {
           model: Region,
-          as: 'Region'
+          as: 'Region',
+          where: {
+            reg_type: 'Регион'
+          },
         },
         {
           model: Indicator,
@@ -316,7 +319,7 @@ exports.findByIndicatorForMap = async (req, res) => {
     });
 
     const groupedResult = result.reduce((r, a) => {
-      r[a.year] = r[a.year] || { min: Infinity, max: 0, values: {} };
+      r[a.year] = r[a.year] || { min: Infinity, max: -Infinity, values: {} };
       r[a.year].values[a.Region.reg_ID] = a;
       const currentValue = parseFloat(a.value);
       if (currentValue > r[a.year].max) {
@@ -327,7 +330,6 @@ exports.findByIndicatorForMap = async (req, res) => {
       }
       return r;
     }, {});
-
     const regions = await Region.findAll({
       where: {
         reg_type: 'Регион'

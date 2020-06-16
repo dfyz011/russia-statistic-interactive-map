@@ -119,6 +119,7 @@ const Map = (props) => {
       .range(['#ffedea', '#ff5233']))(value) : '#F5F4F6';
   };
   const legendItemsCount = 5;
+
   const step = statistic && statistic.max ? (statistic.max - statistic.min) / (legendItemsCount - 1) : 0;
   const legendItems = statistic && statistic.max
     ? Array.from(Array(legendItemsCount).keys(), item => (statistic.min + item * step).toFixed(2)) : [];
