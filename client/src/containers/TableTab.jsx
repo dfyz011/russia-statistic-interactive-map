@@ -17,6 +17,8 @@ import {
 import MainTable from './MainTable';
 import StatisticHeader from '../components/StatisticHeader';
 import { getStatisticByIndicator } from '../actions/statisticAction';
+import { exportToJson } from '../constants/helpers';
+
 
 const TableTab = ({
   currentIndicator, statistic, years, regions, getStatisticByIndicator,
@@ -138,6 +140,7 @@ const TableTab = ({
                 color="primary"
                 size="medium"
                 startIcon={<SaveIcon />}
+                onClick={() => { exportToJson(statistic); }}
               >
                 Save
               </Button>
