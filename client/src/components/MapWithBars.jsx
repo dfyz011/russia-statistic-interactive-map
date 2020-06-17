@@ -179,7 +179,7 @@ const Map = (props) => {
             {({ geographies }) => (
               <>
                 {geographies.map((geo, i) => {
-                  const color = '#F5F4F6';
+                  const color = 'rgb(223, 223, 223)';
                   return (
                     <Geography
                       key={geo.rsmKey}
