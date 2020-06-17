@@ -1,53 +1,5 @@
-// import React from 'react'
-// import { Map as LeafletMap, GeoJSON, Marker, Popup } from 'react-leaflet';
-// import russia from '../russia.js'
-
-// const geoUrl =
-//     "https://raw.githubusercontent.com/zcreativelabs/react-simple-maps/master/topojson-maps/world-110m.json";
-
-// const getData = async file => {
-//     const response = await fetch("/client/public/russia.geojson");
-//     const myJson = await response.json();
-//     return myJson;
-// };
-// class Map extends React.Component {
-//     render() {
-//         return (
-//             <LeafletMap
-//                 center={[50, 10]}
-//                 zoom={6}
-//                 maxZoom={10}
-//                 attributionControl={true}
-//                 zoomControl={true}
-//                 doubleClickZoom={true}
-//                 scrollWheelZoom={true}
-//                 dragging={true}
-//                 animate={true}
-//                 easeLinearity={0.35}
-//             >
-//                 <GeoJSON
-//                     data={russia}
-//                     style={() => ({
-//                         color: '#4a83ec',
-//                         weight: 0.5,
-//                         fillColor: "#1a1d62",
-//                         fillOpacity: 1,
-//                     })}
-//                 />
-//                 <Marker position={[50, 10]}>
-//                     <Popup>
-//                         Popup for any custom information.
-//           </Popup>
-//                 </Marker>
-//             </LeafletMap>
-//         );
-//     }
-// }
-
-// export default Map
-
 import React, {
-  useEffect, useRef, memo,
+  useState, useRef, memo,
 } from 'react';
 import {
   ZoomableGroup,
@@ -59,14 +11,19 @@ import {
   // Sphere,
   // Graticule,
 } from 'react-simple-maps';
-import ReactTooltip from 'react-tooltip';
 import { geoConicEqualArea, geoCentroid } from 'd3-geo';
-import { scaleLinear, scaleQuantile, scaleQuantize } from 'd3-scale';
+import {
+  scaleLinear, scaleQuantile, scaleQuantize,
+} from 'd3-scale';
+
 import {
   Popover,
+  ButtonGroup,
+  Button,
 } from '@material-ui/core';
 import IndicatorModal from './IndicatorModal';
-import { randomColor } from '../constants/helpers';
+import { addOrdinalToNumber } from '../constants/helpers';
+
 
 const mapPath = 'russiaCompressed.json';
 
@@ -77,10 +34,16 @@ const Map = (props) => {
     currentIndicator,
     regions,
     selectedYear,
+    isLegendIntervaled,
+    colors,
+    colorsCount,
+    isRegionsSigned,
   } = props;
+  console.log('isRegionsSigned', isRegionsSigned);
 
-  // const [geographyRef, setGeographyRef] = React.useState(null);
   const [selectedRegion, setSelectedRegion] = React.useState(null);
+
+  const [position, setPosition] = useState({ coordinates: [98.11524315889842, 68.0729404428195], zoom: 1 });
 
   const anchorEl = useRef();
 
@@ -92,24 +55,27 @@ const Map = (props) => {
     setSelectedRegion(null);
   };
 
-  // useEffect(() => {
-  //   const regionsSvgs = document.querySelectorAll('.rsm-geography.region');
-  //   // console.log('useEffect', regionsSvgs);
-  // });
+  function handleZoomIn() {
+    if (position.zoom >= 4) return;
+    setPosition(pos => ({ ...pos, zoom: pos.zoom * 2 }));
+  }
+
+  function handleZoomOut() {
+    if (position.zoom <= 1) return;
+    setPosition(pos => ({ ...pos, zoom: pos.zoom / 2 }));
+  }
+
+  function handleMoveEnd(position) {
+    setPosition(position);
+  }
 
   const handleClick = (statistic, geo) => (event) => {
-    // if (!isTooltipOpen) {
-    //   ReactTooltip.show(geographyRef);
-    // } else {
-    //   ReactTooltip.hide(geographyRef);
-    // }
     const active = document.querySelector('svg .active');
     if (active) {
       active.classList.remove('active');
     }
     event.target.classList.add('active');
     setSelectedRegion(statistic);
-    // setAnchorEl(event.currentTarget);
   };
 
   const projection = () => {
@@ -121,17 +87,26 @@ const Map = (props) => {
       .translate([430, 0]);
   };
 
+  const quantize = statistic && scaleQuantize()
+    .domain([statistic.min, statistic.max])
+    .range(colors);
+
   const colorScale = (value) => {
+    if (isLegendIntervaled) {
+      return statistic ? quantize(value) : '#F5F4F6';
+    }
     return statistic ? (scaleLinear()
       .domain([statistic.min, statistic.max])
-      .range(['#ffedea', '#ff5233']))(value) : '#F5F4F6';
+      .range(colors))(value) : '#F5F4F6';
   };
 
   const legendItemsCount = 5;
 
-  const step = statistic && statistic.max ? (statistic.max - statistic.min) / (legendItemsCount - 1) : 0;
+  const step = statistic && statistic.max
+    ? (statistic.max - statistic.min) / (legendItemsCount - 1) : 0;
   const legendItems = statistic && statistic.max
-    ? Array.from(Array(legendItemsCount).keys(), item => (statistic.min + item * step).toFixed(2)) : [];
+    ? Array.from(Array(legendItemsCount).keys(), item => (statistic.min + item * step).toFixed(2))
+    : [];
 
   return (
     <div
@@ -145,39 +120,58 @@ const Map = (props) => {
           right: 0,
         }}
       >
-        <span style={
-          {
-            fontSize: '13px',
-            lineHeight: '20px',
-            fontStyle: 'normal',
-            fontWeight: 400,
-          }
-        }
+        <div
+          style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+          }}
         >
-          {'Диапазоны значений'}
-        </span>
+          <span style={
+            {
+              fontSize: '13px',
+              lineHeight: '20px',
+              fontStyle: 'normal',
+              fontWeight: 400,
+            }
+          }
+          >
+            {'Диапазоны значений'}
+          </span>
+        </div>
         <ul style={{ listStyle: 'none' }}>
           <li style={{ display: 'flex', alignItems: 'flex-start', margin: '8px' }}>
             <div style={{
-              background: '#F5F4F6', width: '18px', height: '18px', marginRight: '8px', marginTop: '6px', borderRadius: '2px',
+              background: '#F5F4F6',
+              width: '18px',
+              height: '18px',
+              marginRight: '8px',
+              marginTop: '6px',
+              borderRadius: '2px',
             }}
             />
             <span style={
-                {
-                  fontSize: '17px',
-                  lineHeight: '28px',
-                  fontStyle: 'normal',
-                  fontWeight: 400,
-                }
+              {
+                fontSize: '17px',
+                lineHeight: '28px',
+                fontStyle: 'normal',
+                fontWeight: 400,
               }
+            }
             >
               {'Нет данных'}
             </span>
           </li>
-          {legendItems.map((item, index) => (
+          {(isLegendIntervaled ? colors : legendItems).map((item, index) => (
             <li key={index} style={{ display: 'flex', alignItems: 'flex-start', margin: '8px' }}>
               <div style={{
-                background: colorScale(item), width: '18px', height: '18px', marginRight: '8px', marginTop: '6px', borderRadius: '2px',
+                background: isLegendIntervaled
+                  ? item : colorScale(item),
+                width: '18px',
+                height: '18px',
+                marginRight: '8px',
+                marginTop: '6px',
+                borderRadius: '2px',
               }}
               />
               <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -190,7 +184,16 @@ const Map = (props) => {
                 }
               }
                 >
-                  {`${item || ''}`}
+                  {`${
+                    (isLegendIntervaled
+                      ? (
+                        `${addOrdinalToNumber((quantize && quantize.invertExtent(item)[0])
+                          || 0)}
+                          -
+                          ${addOrdinalToNumber((quantize && quantize.invertExtent(item)[1])
+                          || 0)}`
+                      )
+                      : addOrdinalToNumber(item || 0))}`}
                 </span>
                 <span
                   style={{
@@ -201,7 +204,7 @@ const Map = (props) => {
                     color: '#909ebb',
                   }}
                 >
-                  {`${((statistic.values[1] && statistic.values[1].measurement_unit) || '')}`}
+                  {`${((statistic && statistic.values && statistic.values[1] && statistic.values[1].measurement_unit) || '')}`}
                 </span>
               </div>
             </li>
@@ -217,74 +220,120 @@ const Map = (props) => {
           height: 'auto',
         }}
       >
-        {/* <ZoomableGroup
+        <ZoomableGroup
           minZoom={1}
-          maxZoom={2}
-        > */}
-        {/* <Sphere stroke="#E4E5E6" strokeWidth={0.5} /> */}
-        {/* <Graticule stroke="#E4E5E6" strokeWidth={0.5} /> */}
-        <Geographies
-          geography={mapPath}
-          data-tip=""
-          // data-event="click focus"
-          // ref={ref => setGeographyRef(ref)}
-          // data-event-off="mouseleave"
-          data-for="global"
+          maxZoom={4}
+          zoom={position.zoom}
+          center={position.coordinates}
+          onMoveEnd={handleMoveEnd}
         >
-          {({ geographies }) => (
-            <>
-              {geographies.map((geo, i) => {
-                const color = statistic
-                && Object.keys(statistic.values).length > 0
+          {/* <Sphere stroke="#E4E5E6" strokeWidth={0.5} /> */}
+          {/* <Graticule stroke="#E4E5E6" strokeWidth={0.5} /> */}
+          <Geographies
+            geography={mapPath}
+            data-tip=""
+            data-for="global"
+          >
+            {({ geographies }) => (
+              <>
+                {geographies.map((geo) => {
+                  const color = statistic
+                && Object.keys(statistic.values || {}).length > 0
                 && statistic.values[geo.properties.id]
-                  ? colorScale(statistic.values[geo.properties.id].value) : '#F5F4F6';
-                return (
-                  <Geography
-                    key={geo.rsmKey}
-                    onMouseEnter={() => {
-                      handleTooltipChange(statistic.values[geo.properties.id] || { Region: regions[geo.properties.id], year: selectedYear });
-                    }}
-                    onMouseLeave={() => {
-                      handleTooltipChange(null);
-                    }}
-                    className="region"
-                    geography={geo}
-                    // stroke: '#FFFFF',
-                    // strokeWidth: 0.5,
-                    style={{
-                      default: {
-                        fill: color,
-                        outline: 'none',
-                        stroke: '#FFF',
-                        strokeWidth: '0.5',
-                      },
-                      pressed: {
-                        fill: color,
-                        outline: 'none',
-                        stroke: '#FFF',
-                        strokeWidth: '0.5',
-                      },
-                      hover: {
-                        fill: color,
-                        outline: 'none',
-                        stroke: '#FFF',
-                        strokeWidth: '0.5',
-                      },
-                    }}
-                // outline: 'none',
-                    onClick={
-                      handleClick((statistic && statistic.values && statistic.values[geo.properties.id]) || null, geo)
+                    ? colorScale(statistic.values[geo.properties.id].value) : '#F5F4F6';
+                  return (
+                    <Geography
+                      key={geo.rsmKey}
+                      onMouseEnter={() => {
+                        if (statistic && statistic.values && statistic.values[geo.properties.id]) {
+                          handleTooltipChange(statistic.values[geo.properties.id]
+                            || { Region: regions[geo.properties.id], year: selectedYear });
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        handleTooltipChange(null);
+                      }}
+                      className="region"
+                      geography={geo}
+                      style={{
+                        default: {
+                          fill: color,
+                          outline: 'none',
+                          stroke: '#FFF',
+                          strokeWidth: '0.5',
+                        },
+                        pressed: {
+                          fill: color,
+                          outline: 'none',
+                          stroke: '#FFF',
+                          strokeWidth: '0.5',
+                        },
+                        hover: {
+                          fill: color,
+                          outline: 'none',
+                          stroke: '#FFF',
+                          strokeWidth: '0.5',
+                        },
+                      }}
+                      onClick={
+                      handleClick((statistic && statistic.values
+                        && statistic.values[geo.properties.id]) || null, geo)
                     }
-                  />
-                );
-              })}
-            </>
-          )}
-        </Geographies>
-
-
-        {/* </ZoomableGroup> */}
+                    />
+                  );
+                })}
+                {isRegionsSigned && geographies.map((geo) => {
+                  console.log('isRegionsSigned', geo);
+                  const centroid = geoCentroid(geo);
+                  const cur = regions[geo.properties.id];
+                  return (
+                    <Marker
+                      key={`${geo.rsmKey}-name`}
+                      coordinates={centroid}
+                      onMouseEnter={() => {
+                        if (statistic && statistic.values && statistic.values[geo.properties.id]) {
+                          handleTooltipChange(statistic.values[geo.properties.id]
+                            || { Region: regions[geo.properties.id], year: selectedYear });
+                        }
+                      }}
+                      onMouseLeave={() => {
+                        handleTooltipChange(null);
+                      }}
+                    >
+                      <text x={-12} fontSize={8} alignmentBaseline="middle">
+                        {cur.reg_alias_short_3letters}
+                      </text>
+                    </Marker>
+                  //                 <Annotation
+                  //                   subject={centroid}
+                  //                   key={geo.properties.id}
+                  //                       // dx={offsets[cur.id][0]}
+                  // // dy={offsets[cur.id][1]}
+                  //                 >
+                  //                   <text x={4} fontSize={8} alignmentBaseline="middle">
+                  //                     {cur.reg_alias_short_3letters}
+                  //                   </text>
+                  //                 </Annotation>
+                  );
+                })}
+              </>
+            )}
+          </Geographies>
+        </ZoomableGroup>
       </ComposableMap>
+      <div style={{
+        display: 'flex',
+        position: 'absolute',
+        top: 0,
+        left: '50%',
+        transform: 'translateX(-50%)',
+      }}
+      >
+        <ButtonGroup variant="contained">
+          <Button onClick={handleZoomIn}>+</Button>
+          <Button onClick={handleZoomOut}>-</Button>
+        </ButtonGroup>
+      </div>
       <Popover
         anchorEl={anchorEl.current}
         open={Boolean(selectedRegion)}
@@ -313,6 +362,10 @@ function areEqual(prevProps, nextProps) {
   if (
     prevProps.isTooltipOpen !== nextProps.isTooltipOpen
     || prevProps.statistic !== nextProps.statistic
+    || prevProps.isLegendIntervaled !== nextProps.isLegendIntervaled
+    || prevProps.colors !== nextProps.colors
+    || prevProps.colors !== nextProps.colors
+    || prevProps.isRegionsSigned !== nextProps.isRegionsSigned
   ) return false;
   return true;
 }

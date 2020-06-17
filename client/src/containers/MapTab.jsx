@@ -19,6 +19,8 @@ import IndicatorsModal from '../components/IndicatorsModal';
 import StatisticHeader from '../components/StatisticHeader';
 import { getStatisticByIndicator, getStatisticForMap } from '../actions/statisticAction';
 
+import { withSettingsPanel } from './withSettingsPanel';
+
 import { randomColor } from '../constants/helpers';
 
 function timeout(ms) {
@@ -33,7 +35,12 @@ const MapTab = ({
   years,
   indicators,
   isBar,
+  colors,
+  colorsCount,
+  isLegendIntervaled,
+  isRegionsSigned,
 }) => {
+  console.log('MapTabcolors', isRegionsSigned);
   const [selectedIndicators, setSelectedIndicators] = React.useState([]);
   const [selectedYear, setSelectedYear] = React.useState(0);
 
@@ -127,6 +134,9 @@ const MapTab = ({
       {
         isBar && (
           <Autocomplete
+            style={{
+              paddingBottom: '16px',
+            }}
             options={indicators}
             multiple
             onChange={handleSelectedIndicators}
@@ -173,12 +183,18 @@ const MapTab = ({
       {
         !isBar ? (
           <Map
-            statistic={mapStatistic && selectedYear && mapStatistic[selectedYear] && currentIndicator && currentIndicator.id
+            statistic={mapStatistic
+              && selectedYear
+              && mapStatistic[selectedYear] && currentIndicator && currentIndicator.id
               ? mapStatistic[selectedYear][currentIndicator.id] : []}
             regions={mapRegions}
             selectedYear={selectedYear}
             handleTooltipChange={setTooltip}
             currentIndicator={currentIndicator || {}}
+            isLegendIntervaled={isLegendIntervaled}
+            colors={colors}
+            colorsCount={colorsCount}
+            isRegionsSigned={isRegionsSigned}
           />
         ) : (
           <MapWithBars
@@ -240,4 +256,4 @@ export default connect(
     getStatisticByIndicator,
     getStatisticForMap,
   },
-)(MapTab);
+)(withSettingsPanel(MapTab));

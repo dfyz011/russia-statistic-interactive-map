@@ -144,22 +144,23 @@ function App({
         />
       </Container>
       )}
-      <Container style={{ paddingTop: 20 }}>
-        <Paper elevation={3} square>
-          <Tabs
-            value={currentTab}
-            onChange={handleTabChange}
-            indicatorColor="primary"
-            textColor="primary"
-            variant="fullWidth"
-          >
-            <Tab label="Карта" {...getTabProps('map')} />
-            <Tab label="Диаграмма" {...getTabProps('diagramm')} />
-            <Tab label="Рейтинг" {...getTabProps('rating')} />
-            <Tab label="Исходные данные" {...getTabProps('source-data')} />
-            <Tab label="Столбчатая карта" {...getTabProps('bar-map')} />
-          </Tabs>
-          {
+      <div style={{ position: 'relative' }}>
+        <Container style={{ paddingTop: 20 }}>
+          <Paper elevation={3} square>
+            <Tabs
+              value={currentTab}
+              onChange={handleTabChange}
+              indicatorColor="primary"
+              textColor="primary"
+              variant="fullWidth"
+            >
+              <Tab label="Карта" {...getTabProps('map')} />
+              <Tab label="Диаграмма" {...getTabProps('diagramm')} />
+              <Tab label="Рейтинг" {...getTabProps('rating')} />
+              <Tab label="Исходные данные" {...getTabProps('source-data')} />
+              <Tab label="Столбчатая карта" {...getTabProps('bar-map')} />
+            </Tabs>
+            {
           isLoading ? (<LinearProgress />)
             : (
               <>
@@ -217,8 +218,9 @@ function App({
               </>
             )
           }
-        </Paper>
-      </Container>
+          </Paper>
+        </Container>
+      </div>
     </Box>
   );
 }

@@ -11,7 +11,6 @@ import {
   Sphere,
   Graticule,
 } from 'react-simple-maps';
-import ReactTooltip from 'react-tooltip';
 import { geoConicEqualArea, geoCentroid } from 'd3-geo';
 import { scaleLinear, scaleQuantile, scaleQuantize } from 'd3-scale';
 import {
@@ -93,11 +92,6 @@ const Map = (props) => {
       .range([0, 40]))(value) : 0;
   };
 
-  // const legendItemsCount = 5;
-
-  // const step = statistic && statistic.max ? (statistic.max - statistic.min) / (legendItemsCount - 1) : 0;
-  // const legendItems = statistic && statistic.max
-  //   ? Array.from(Array(legendItemsCount).keys(), item => (statistic.min + item * step).toFixed(2)) : [];
   const statisticIndicators = Object.keys(statistic);
   const indicatorsCount = statisticIndicators.length;
   const barWidth = 4;
@@ -116,13 +110,13 @@ const Map = (props) => {
         }}
       >
         <span style={
-                {
-                  fontSize: '13px',
-                  lineHeight: '20px',
-                  fontStyle: 'normal',
-                  fontWeight: 400,
-                }
-              }
+          {
+            fontSize: '13px',
+            lineHeight: '20px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+          }
+        }
         >
           {'Метрики'}
         </span>
@@ -171,9 +165,6 @@ const Map = (props) => {
           <Geographies
             geography={mapPath}
             data-tip=""
-          // data-event="click focus"
-          // ref={ref => setGeographyRef(ref)}
-          // data-event-off="mouseleave"
             data-for="global"
           >
             {({ geographies }) => (
@@ -196,8 +187,6 @@ const Map = (props) => {
                       }}
                       className="region"
                       geography={geo}
-                      // stroke: '#FFF',
-                      // strokeWidth: '0.5',
                       style={{
                         default: {
                           fill: color,
@@ -242,6 +231,17 @@ const Map = (props) => {
                           <Marker
                             key={`${geo.rsmKey}-bar-${indicator}`}
                             coordinates={centroid}
+                            onMouseEnter={() => {
+                              handleTooltipChange({
+                                selectedRegion: selectedRegion || regions[geo.properties.id],
+                                indicatorsStatistic: statistic,
+                                selectedIndicators,
+                                selectedYear,
+                              });
+                            }}
+                            onMouseLeave={() => {
+                              handleTooltipChange(null);
+                            }}
                           >
                             <rect
                               x={xPosition}
