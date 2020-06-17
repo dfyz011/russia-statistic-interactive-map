@@ -27,3 +27,20 @@ export const exportToJson = (objectData) => {
     document.body.removeChild(a);
   }
 };
+
+export const addOrdinalToNumber = (labelValue) => {
+  // Nine Zeroes for Billions
+  return Math.abs(Number(labelValue)) >= 1.0e+9
+
+    ? `${(Math.abs(Number(labelValue)) / 1.0e+9).toFixed(2)} млн.`
+  // Six Zeroes for Millions
+    : Math.abs(Number(labelValue)) >= 1.0e+6
+
+      ? `${(Math.abs(Number(labelValue)) / 1.0e+6).toFixed(2)} млрд.`
+    // Three Zeroes for Thousands
+      : Math.abs(Number(labelValue)) >= 1.0e+3
+
+        ? `${(Math.abs(Number(labelValue)) / 1.0e+3).toFixed(2)} трлн.`
+
+        : Math.abs(Number(labelValue).toFixed(2));
+};
