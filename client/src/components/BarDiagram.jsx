@@ -49,12 +49,12 @@ const BarDiagram = ({ diagramStatistic }) => {
         <BarChart
           data={diagramStatistic}
           margin={{
-            top: 5, right: 30, left: 20, bottom: 5,
+            top: 5, right: 30, left: 40, bottom: 5,
           }}
         >
           <CartesianGrid stroke="#ccc" strokeDasharray="3 3" />
           <XAxis dataKey="year" type="category" />
-          <YAxis unit="%" />
+          <YAxis unit={diagramStatistic.measurement_unit} />
           <Tooltip />
           <Legend onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave} />
           {Object.keys(diagramStatistic[0]).filter((key) => key !== 'year').map((stat, index) => {

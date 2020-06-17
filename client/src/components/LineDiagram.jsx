@@ -48,7 +48,7 @@ const LineDiagram = ({ diagramStatistic }) => {
         <LineChart
           data={diagramStatistic}
           margin={{
-            top: 5, right: 30, left: 20, bottom: 5,
+            top: 5, right: 30, left: 40, bottom: 5,
           }}
         >
           {Object.keys(diagramStatistic[0]).filter((key) => key !== 'year').map((stat, index) => {
@@ -66,7 +66,7 @@ const LineDiagram = ({ diagramStatistic }) => {
             // label="lol"
           />
           <YAxis
-            unit="%"
+            unit={diagramStatistic.measurement_unit}
           />
         </LineChart>
       </ResponsiveContainer>

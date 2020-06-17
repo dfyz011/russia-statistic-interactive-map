@@ -142,7 +142,7 @@ exports.findByIndicatorForDiagram = async (req, res) => {
           ['year', 'ASC'],
           [Region, 'reg_alias_human_name', 'ASC'],
         ],
-        attributes: ['value', 'year', 'region_id']
+        attributes: ['value', 'year', 'region_id', 'measurement_unit']
       });
     }
 
