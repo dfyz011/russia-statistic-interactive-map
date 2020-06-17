@@ -68,7 +68,7 @@ import {
 import IndicatorModal from './IndicatorModal';
 import { randomColor } from '../constants/helpers';
 
-const mapPath = 'russia.json';
+const mapPath = 'russiaCompressed.json';
 
 const Map = (props) => {
   const {
@@ -146,13 +146,13 @@ const Map = (props) => {
         }}
       >
         <span style={
-                {
-                  fontSize: '13px',
-                  lineHeight: '20px',
-                  fontStyle: 'normal',
-                  fontWeight: 400,
-                }
-              }
+          {
+            fontSize: '13px',
+            lineHeight: '20px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+          }
+        }
         >
           {'Диапазоны значений'}
         </span>
@@ -255,14 +255,20 @@ const Map = (props) => {
                       default: {
                         fill: color,
                         outline: 'none',
+                        stroke: '#FFF',
+                        strokeWidth: '0.5',
                       },
                       pressed: {
                         fill: color,
                         outline: 'none',
+                        stroke: '#FFF',
+                        strokeWidth: '0.5',
                       },
                       hover: {
                         fill: color,
                         outline: 'none',
+                        stroke: '#FFF',
+                        strokeWidth: '0.5',
                       },
                     }}
                 // outline: 'none',

@@ -21,7 +21,7 @@ import {
 } from '@material-ui/core';
 import IndicatorsModal from './IndicatorsModal';
 
-const mapPath = 'russia.json';
+const mapPath = 'russiaCompressed.json';
 
 const Map = (props) => {
   const {
@@ -197,19 +197,25 @@ const Map = (props) => {
                       className="region"
                       geography={geo}
                       // stroke: '#FFF',
-                      // strokeWidth: '0.3',
+                      // strokeWidth: '0.5',
                       style={{
                         default: {
                           fill: color,
                           outline: 'none',
+                          stroke: '#FFF',
+                          strokeWidth: '0.5',
                         },
                         pressed: {
                           fill: color,
                           outline: 'none',
+                          stroke: '#FFF',
+                          strokeWidth: '0.5',
                         },
                         hover: {
                           fill: color,
                           outline: 'none',
+                          stroke: '#FFF',
+                          strokeWidth: '0.5',
                         },
                       }}
                       onClick={
