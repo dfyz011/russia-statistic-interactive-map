@@ -194,6 +194,7 @@ export const getStatisticForMap = (indicators) => async dispatch => {
       payload: {
         items: json.items,
         regions: json.regions,
+        years: json.years,
       },
     });
   } catch (err) {

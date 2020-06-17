@@ -345,7 +345,17 @@ exports.findByIndicatorsForMap = async (req, res) => {
       r[a.reg_alias_fias_id] = a;
       return r;
     }, {});
-    res.json({ items: groupedResult, regions: groupedRegions });
+    const years = await Region_statistic.findAll({
+      attributes: ['year'],
+      where: {
+        indicator_id: { [Op.in]: [...rawSelectedIndicators] },
+      },
+      group: ['year'],
+      order: [
+        ['year', 'ASC'],
+      ],
+    });
+    res.json({ items: groupedResult, regions: groupedRegions, years });
   } catch (err) {
     console.error(err);
     if (err.kind === 'not_found') {

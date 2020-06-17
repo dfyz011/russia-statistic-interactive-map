@@ -32,7 +32,7 @@ export function statisticReducer(state = initialState, action) {
         ...state,
         mapStatistic: action.payload.items,
         mapRegions: action.payload.regions,
-
+        years: action.payload.years,
       };
     case GET_DIAGRAM_STATISTIC:
       return {
