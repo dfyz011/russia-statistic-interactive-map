@@ -173,7 +173,7 @@ const MapTab = ({
       {
         !isBar ? (
           <Map
-            statistic={mapStatistic && selectedYear && currentIndicator
+            statistic={mapStatistic && selectedYear && currentIndicator && currentIndicator.id
               ? mapStatistic[selectedYear][currentIndicator.id] : []}
             regions={mapRegions}
             selectedYear={selectedYear}
@@ -182,7 +182,7 @@ const MapTab = ({
           />
         ) : (
           <MapWithBars
-            statistic={mapStatistic && selectedYear ? mapStatistic[selectedYear] : []}
+            statistic={mapStatistic && selectedYear && mapStatistic[selectedYear] ? mapStatistic[selectedYear] : []}
             regions={mapRegions}
             selectedYear={selectedYear}
             handleTooltipChange={setTooltip}
