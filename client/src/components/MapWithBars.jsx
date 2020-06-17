@@ -33,9 +33,9 @@ const Map = (props) => {
     indicatorsColors,
   } = props;
 
-  const [selectedRegionId, setSelectedRegionId] = useState(null);
+  const [selectedRegion, setSelectedRegion] = useState(null);
 
-  const [position, setPosition] = useState({ coordinates: [0, 0], zoom: 1 });
+  const [position, setPosition] = useState({ coordinates: [98.11524315889842, 68.0729404428195], zoom: 1 });
 
   const anchorEl = useRef();
 
@@ -44,7 +44,7 @@ const Map = (props) => {
     if (active) {
       active.classList.remove('active');
     }
-    setSelectedRegionId(null);
+    setSelectedRegion(null);
   };
 
 
@@ -69,7 +69,7 @@ const Map = (props) => {
       active.classList.remove('active');
     }
     event.target.classList.add('active');
-    setSelectedRegionId(geo.properties.id);
+    setSelectedRegion(regions[geo.properties.id]);
   };
 
   const projection = () => {
@@ -102,7 +102,6 @@ const Map = (props) => {
   const indicatorsCount = statisticIndicators.length;
   const barWidth = 4;
   const barOffset = 2;
-  console.log('indicatorsColors', indicatorsColors);
 
   return (
     <div
@@ -125,7 +124,7 @@ const Map = (props) => {
                 }
               }
         >
-          {'Индикаторы'}
+          {'Метрики'}
         </span>
         <ul style={{ listStyle: 'none' }}>
           {statisticIndicators.map((item, index) => {
@@ -185,31 +184,32 @@ const Map = (props) => {
                     <Geography
                       key={geo.rsmKey}
                       onMouseEnter={() => {
-                        handleTooltipChange(statistic || { Region: regions[geo.properties.id], year: selectedYear });
+                        handleTooltipChange({
+                          selectedRegion: selectedRegion || regions[geo.properties.id],
+                          indicatorsStatistic: statistic,
+                          selectedIndicators,
+                          selectedYear,
+                        });
                       }}
                       onMouseLeave={() => {
                         handleTooltipChange(null);
                       }}
                       className="region"
                       geography={geo}
+                      // stroke: '#FFF',
+                      // strokeWidth: '0.3',
                       style={{
                         default: {
                           fill: color,
                           outline: 'none',
-                          stroke: '#FFF',
-                          strokeWidth: '0.3',
                         },
                         pressed: {
                           fill: color,
                           outline: 'none',
-                          stroke: '#FFF',
-                          strokeWidth: '0.3',
                         },
                         hover: {
                           fill: color,
                           outline: 'none',
-                          stroke: '#FFF',
-                          strokeWidth: '0.3',
                         },
                       }}
                       onClick={
@@ -218,7 +218,7 @@ const Map = (props) => {
                     />
                   );
                 })}
-                {geographies.map(geo => {
+                { selectedIndicators && selectedIndicators.length > 0 && geographies.map(geo => {
                   const centroid = geoCentroid(geo);
                   const cur = regions[geo.properties.id];
                   return (
@@ -279,7 +279,7 @@ const Map = (props) => {
       </div>
       <Popover
         anchorEl={anchorEl.current}
-        open={Boolean(selectedRegionId)}
+        open={Boolean(selectedRegion)}
         anchorOrigin={{
           vertical: 'top',
           horizontal: 'left',
@@ -292,9 +292,10 @@ const Map = (props) => {
       >
         <div style={{ padding: '18px 24px' }}>
           <IndicatorsModal
-            selectedRegionId={selectedRegionId}
+            selectedRegion={selectedRegion}
             indicatorsStatistic={statistic}
             selectedIndicators={selectedIndicators}
+            selectedYear={selectedYear}
             onClose={onCloseRegionPopover}
           />
         </div>

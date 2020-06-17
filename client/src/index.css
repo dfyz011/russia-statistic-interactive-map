@@ -34,11 +34,15 @@ code {
   outline: none;
 }
 
-.active{
+.active {
   fill: #999 !important;
 }
 
-.chip{
+.chip {
   padding: 0 3px 3px 0;
+}
+
+.chart-button.selected {
+  background: lightgray;
 }
 

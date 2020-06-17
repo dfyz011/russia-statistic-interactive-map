@@ -1,4 +1,5 @@
 import React, { useEffect, useRef } from 'react';
+import clsx from 'clsx';
 
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { connect } from 'react-redux';
@@ -197,17 +198,9 @@ const DiagramsTab = (props) => {
             component="span"
             size="small"
             onClick={() => {
-              setSelectedDiagram('bar');
-            }}
-          >
-            <BarChartIcon />
-          </IconButton>
-          <IconButton
-            component="span"
-            size="small"
-            onClick={() => {
               setSelectedDiagram('line');
             }}
+            className={clsx('chart-button', selectedDiagram === 'line' && 'selected')}
           >
             <TimelineIcon />
           </IconButton>
@@ -215,8 +208,19 @@ const DiagramsTab = (props) => {
             component="span"
             size="small"
             onClick={() => {
+              setSelectedDiagram('bar');
+            }}
+            className={clsx('chart-button', selectedDiagram === 'bar' && 'selected')}
+          >
+            <BarChartIcon />
+          </IconButton>
+          <IconButton
+            component="span"
+            size="small"
+            onClick={() => {
               setSelectedDiagram('radar');
             }}
+            className={clsx('chart-button', selectedDiagram === 'radar' && 'selected')}
           >
             <TrackChangesTwoToneIcon />
           </IconButton>
@@ -224,7 +228,16 @@ const DiagramsTab = (props) => {
       </Grid>
       <div style={{ width: '100%', height: '800px', marginTop: '16px' }}>
         {diagramStatistic && diagramStatistic.length > 0
-          && diagrams[selectedDiagram]}
+          ? (diagrams[selectedDiagram]) : (
+            <div style={{
+              height: '100%',
+              textAlign: 'center',
+              fontSize: '25px',
+            }}
+            >
+              Необходимо выбрать как минимум 1 дату и 1 регион
+            </div>
+          )}
       </div>
 
     </>

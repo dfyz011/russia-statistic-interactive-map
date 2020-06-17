@@ -7,34 +7,35 @@ import {
 
 
 const IndicatorsModal = ({
-  indicatorsStatistic, selectedIndicators, selectedRegionId, onClose,
+  indicatorsStatistic, selectedIndicators, selectedRegion, selectedYear, onClose,
 }) => {
-  console.log('IndicatorsModalindicatorsStatistic', indicatorsStatistic);
-  console.log('IndicatorsModalselectedIndicators', selectedIndicators);
-
-  const beautifulValues = selectedIndicators.map((indicator) => {
+  const beautifulValues = selectedIndicators ? selectedIndicators.map((indicator) => {
     return {
       Indicator: indicator,
       value: parseFloat(`${(indicatorsStatistic
+        && selectedRegion
         && indicatorsStatistic[indicator.id]
         && indicatorsStatistic[indicator.id].values
-        && indicatorsStatistic[indicator.id].values[selectedRegionId]
-        && indicatorsStatistic[indicator.id].values[selectedRegionId].value) || ''}`
+        && indicatorsStatistic[indicator.id].values[selectedRegion.reg_alias_fias_id]
+        && indicatorsStatistic[indicator.id].values[selectedRegion.reg_alias_fias_id].value) || ''}`
         .replace(',', '.')).toFixed(2),
       measurement_unit: indicatorsStatistic
+      && selectedRegion
       && indicatorsStatistic[indicator.id]
       && indicatorsStatistic[indicator.id].values
-      && indicatorsStatistic[indicator.id].values[selectedRegionId]
-      && indicatorsStatistic[indicator.id].values[selectedRegionId].measurement_unit,
+      && indicatorsStatistic[indicator.id].values[selectedRegion.reg_alias_fias_id]
+      && indicatorsStatistic[indicator.id].values[selectedRegion.reg_alias_fias_id].measurement_unit,
     };
-  });
+  }) : [];
 
-  const stat = indicatorsStatistic
+  const stat = selectedIndicators
+  && selectedIndicators.length > 0
+  && indicatorsStatistic
+  && selectedRegion
   && indicatorsStatistic[selectedIndicators[0].id]
   && indicatorsStatistic[selectedIndicators[0].id].values
-  && indicatorsStatistic[selectedIndicators[0].id].values[selectedRegionId];
+  && indicatorsStatistic[selectedIndicators[0].id].values[selectedRegion.reg_alias_fias_id];
 
-  console.log('beautifulValues', beautifulValues);
 
   return (
     <div style={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}>
@@ -49,7 +50,7 @@ const IndicatorsModal = ({
           alignItems: 'center',
         }}
       >
-        <span>{(stat && stat.Region && stat.Region.reg_alias_human_name) || ''}</span>
+        <span>{(selectedRegion && selectedRegion.reg_alias_human_name) || ''}</span>
         {onClose && (
         <IconButton
           component="span"
@@ -64,12 +65,17 @@ const IndicatorsModal = ({
         </IconButton>
         )}
       </div>
-      <div style={{
-        padding: '8px 0',
-      }}
-      >
-        {`За ${(stat && stat.year) || ''} год`}
-      </div>
+      {
+        beautifulValues && beautifulValues.length > 0
+        && (
+        <div style={{
+          padding: '8px 0',
+        }}
+        >
+          {`За ${(selectedYear) || ''} год`}
+        </div>
+        )
+      }
       <>
         {
         beautifulValues.map((val) => (

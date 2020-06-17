@@ -98,8 +98,6 @@ const Map = (props) => {
   // });
 
   const handleClick = (statistic, geo) => (event) => {
-    console.log('handleClick', event);
-    console.log('geo', geo);
     // if (!isTooltipOpen) {
     //   ReactTooltip.show(geographyRef);
     // } else {
@@ -251,6 +249,8 @@ const Map = (props) => {
                     }}
                     className="region"
                     geography={geo}
+                    // stroke: '#FFFFF',
+                    // strokeWidth: 0.5,
                     style={{
                       default: {
                         fill: color,

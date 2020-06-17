@@ -132,6 +132,7 @@ function App({
 
   return (
     <Box>
+      {currentTab !== 'bar-map' && currentTab !== 'rating' && (
       <Container>
         <IndicatorSelectorCard
           handleSelectedCatogories={handleSelectedCatogories}
@@ -142,6 +143,7 @@ function App({
           indicators={indicators}
         />
       </Container>
+      )}
       <Container style={{ paddingTop: 20 }}>
         <Paper elevation={3} square>
           <Tabs
@@ -155,6 +157,7 @@ function App({
             <Tab label="Диаграмма" {...getTabProps('diagramm')} />
             <Tab label="Рейтинг" {...getTabProps('rating')} />
             <Tab label="Исходные данные" {...getTabProps('source-data')} />
+            <Tab label="Столбчатая карта" {...getTabProps('bar-map')} />
           </Tabs>
           {
           isLoading ? (<LinearProgress />)
@@ -185,7 +188,7 @@ function App({
                       style={{ flexDirection: 'row' }}
                     >
                       <FormControlLabel value="region" control={<Radio />} label="Региону" />
-                      <FormControlLabel value="indicator" control={<Radio />} label="Индикатору" />
+                      <FormControlLabel value="indicator" control={<Radio />} label="Метрике" />
                     </RadioGroup>
                   </FormControl>
                   {
@@ -201,6 +204,14 @@ function App({
                     statistic={statistic}
                     years={years}
                     regions={regions}
+                  />
+                </TabPanel>
+                <TabPanel value={currentTab} index="bar-map">
+                  <MapTab
+                    currentIndicator={currentIndicator}
+                    years={years}
+                    indicators={indicators}
+                    isBar
                   />
                 </TabPanel>
               </>

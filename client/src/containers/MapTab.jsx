@@ -15,6 +15,7 @@ import MapAnimation from '../components/MapAnimation';
 import Map from '../components/Map';
 import MapWithBars from '../components/MapWithBars';
 import IndicatorModal from '../components/IndicatorModal';
+import IndicatorsModal from '../components/IndicatorsModal';
 import StatisticHeader from '../components/StatisticHeader';
 import { getStatisticByIndicator, getStatisticForMap } from '../actions/statisticAction';
 
@@ -31,6 +32,7 @@ const MapTab = ({
   mapRegions,
   years,
   indicators,
+  isBar,
 }) => {
   const [selectedIndicators, setSelectedIndicators] = React.useState([]);
   const [selectedYear, setSelectedYear] = React.useState(0);
@@ -96,8 +98,6 @@ const MapTab = ({
     setIsAnimating(true);
   };
 
-  console.log('selectedIndicators', selectedIndicators);
-
   const indicatorsColors = selectedIndicators.reduce((r, a) => {
     r[a.id] = randomColor();
     return r;
@@ -124,52 +124,56 @@ const MapTab = ({
           </FormControl>
         </Grid>
       </Grid> */}
-      <Autocomplete
-        options={indicators}
-        multiple
-        onChange={handleSelectedIndicators}
-        value={selectedIndicators}
-        noOptionsText="Не найдено"
-        disableCloseOnSelect
-            // renderTags={() => {}}
-            // renderTags={(value, getTagProps) => (
-            //   <div>
-            //     <span style={{ whiteSpace: 'nowrap' }}>
-            //       {`${value.map((reg) => reg.reg_alias_human_name).join(', ')}`}
-            //     </span>
-            //   </div>
-            // )}
-        renderTags={(value, getTagProps) => (
-          <div className="chips">
-            {value.map((indicator) => (
-              <Chip key={indicator.id} label={indicator.title} className="chips" />
-            ))}
-          </div>
-        )}
-        getOptionLabel={(option) => option.title}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            label="Индикаторы"
-            InputLabelProps={{ shrink: true }}
-          />
-        )}
-        renderOption={(option, { selected }) => (
-          <>
-            <Checkbox
-              style={{ marginRight: 8 }}
-              checked={selected}
-            />
-            {option.title}
-          </>
-        )}
-        getOptionSelected={(option, value) => value.id === option.id}
-      />
-      <StatisticHeader currentIndicator={currentIndicator} />
       {
-        !selectedIndicators || selectedIndicators.length === 0 ? (
+        isBar && (
+          <Autocomplete
+            options={indicators}
+            multiple
+            onChange={handleSelectedIndicators}
+            value={selectedIndicators}
+            noOptionsText="Не найдено"
+            disableCloseOnSelect
+              // renderTags={() => {}}
+              // renderTags={(value, getTagProps) => (
+              //   <div>
+              //     <span style={{ whiteSpace: 'nowrap' }}>
+              //       {`${value.map((reg) => reg.reg_alias_human_name).join(', ')}`}
+              //     </span>
+              //   </div>
+              // )}
+            renderTags={(value, getTagProps) => (
+              <div className="chips">
+                {value.map((indicator) => (
+                  <Chip key={indicator.id} label={indicator.title} className="chips" />
+                ))}
+              </div>
+            )}
+            getOptionLabel={(option) => option.title}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Метрики"
+                InputLabelProps={{ shrink: true }}
+              />
+            )}
+            renderOption={(option, { selected }) => (
+              <>
+                <Checkbox
+                  style={{ marginRight: 8 }}
+                  checked={selected}
+                />
+                {option.title}
+              </>
+            )}
+            getOptionSelected={(option, value) => value.id === option.id}
+          />
+        )
+      }
+      {!isBar && (<StatisticHeader currentIndicator={currentIndicator} />)}
+      {
+        !isBar ? (
           <Map
-            statistic={mapStatistic && selectedYear
+            statistic={mapStatistic && selectedYear && currentIndicator
               ? mapStatistic[selectedYear][currentIndicator.id] : []}
             regions={mapRegions}
             selectedYear={selectedYear}
@@ -216,9 +220,10 @@ const MapTab = ({
         // afterHide={() => setIsTooltipOpen(false)}
       >
         {tooltip
-        && (
-        <IndicatorModal selectedRegion={tooltip} currentIndicator={currentIndicator} />
-        )}
+        && !isBar ? (
+          <IndicatorModal selectedRegion={tooltip} currentIndicator={currentIndicator} />
+          )
+          : (<IndicatorsModal {...tooltip} />)}
       </ReactTooltip>
     </>
   );
