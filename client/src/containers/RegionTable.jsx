@@ -25,7 +25,7 @@ const RegionTable = ({
               <TableHead className="table-head">
                 <TableRow>
                   <TableCell>Место</TableCell>
-                  <TableCell>Индикатор</TableCell>
+                  <TableCell>Метрика</TableCell>
                   <TableCell>Значение</TableCell>
                   <TableCell>Единицы измерения</TableCell>
                 </TableRow>

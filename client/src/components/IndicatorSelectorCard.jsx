@@ -48,7 +48,7 @@ const IndicatorSelectorCard = ({
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Категории индикаторов"
+                  label="Категории метрик"
                   InputLabelProps={{ shrink: true }}
                 />
               )}
