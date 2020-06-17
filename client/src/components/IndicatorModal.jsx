@@ -5,9 +5,11 @@ import {
   Divider,
 } from '@material-ui/core';
 
+import { addOrdinalToNumber } from '../constants/helpers';
+
 
 const IndicatorModal = ({ selectedRegion, currentIndicator, onClose }) => {
-  const beautifulValue = parseFloat(`${(selectedRegion && selectedRegion.value) || ''}`.replace(',', '.')).toFixed(2);
+  const beautifulValue = addOrdinalToNumber(`${(selectedRegion && selectedRegion.value) || ''}`.replace(',', '.'));
   return (
     <div style={{ fontFamily: 'Roboto, Helvetica, Arial, sans-serif' }}>
       <div

@@ -4,7 +4,7 @@ import {
   IconButton,
   Divider,
 } from '@material-ui/core';
-
+import { addOrdinalToNumber } from '../constants/helpers';
 
 const IndicatorsModal = ({
   indicatorsStatistic, selectedIndicators, selectedRegion, selectedYear, onClose,
@@ -12,13 +12,13 @@ const IndicatorsModal = ({
   const beautifulValues = selectedIndicators ? selectedIndicators.map((indicator) => {
     return {
       Indicator: indicator,
-      value: parseFloat(`${(indicatorsStatistic
+      value: addOrdinalToNumber(`${(indicatorsStatistic
         && selectedRegion
         && indicatorsStatistic[indicator.id]
         && indicatorsStatistic[indicator.id].values
         && indicatorsStatistic[indicator.id].values[selectedRegion.reg_alias_fias_id]
         && indicatorsStatistic[indicator.id].values[selectedRegion.reg_alias_fias_id].value) || ''}`
-        .replace(',', '.')).toFixed(2),
+        .replace(',', '.')),
       measurement_unit: indicatorsStatistic
       && selectedRegion
       && indicatorsStatistic[indicator.id]
