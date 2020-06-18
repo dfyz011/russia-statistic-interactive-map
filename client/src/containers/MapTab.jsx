@@ -39,8 +39,17 @@ const MapTab = ({
   colorsCount,
   isLegendIntervaled,
   isRegionsSigned,
+  handleSelectedIndicatorsChange,
+  mainMapColor,
+  mapFontColor,
+  mapBorderColor,
+  mapFontSize,
+  legendFontSize,
+  legendFontColor,
+  isRegionNames3Letters,
+  indicatorsColors,
 }) => {
-  console.log('MapTabcolors', isRegionsSigned);
+  console.log('Render', indicatorsColors);
   const [selectedIndicators, setSelectedIndicators] = React.useState([]);
   const [selectedYear, setSelectedYear] = React.useState(0);
 
@@ -63,6 +72,7 @@ const MapTab = ({
   useEffect(() => {
     if (selectedIndicators && selectedIndicators.length > 0) {
       getStatisticForMap(selectedIndicators);
+      handleSelectedIndicatorsChange(selectedIndicators);
     }
   }, [selectedIndicators]);
 
@@ -86,6 +96,7 @@ const MapTab = ({
 
   const handleSelectedIndicators = (event, newValue) => {
     setSelectedIndicators(newValue);
+    handleSelectedIndicatorsChange(newValue);
   };
   const onPlayClick = () => {
     setIsAnimating(true);
@@ -104,11 +115,6 @@ const MapTab = ({
     setSelectedYear(years[0]);
     setIsAnimating(true);
   };
-
-  const indicatorsColors = selectedIndicators.reduce((r, a) => {
-    r[a.id] = randomColor();
-    return r;
-  }, {});
 
   return (
     <>
@@ -195,15 +201,28 @@ const MapTab = ({
             colors={colors}
             colorsCount={colorsCount}
             isRegionsSigned={isRegionsSigned}
+            mainMapColor={mainMapColor}
+            mapFontColor={mapFontColor}
+            mapBorderColor={mapBorderColor}
+            mapFontSize={mapFontSize}
+            legendFontSize={legendFontSize}
+            isRegionNames3Letters={isRegionNames3Letters}
+            legendFontColor={legendFontColor}
           />
         ) : (
           <MapWithBars
-            statistic={mapStatistic && selectedYear && mapStatistic[selectedYear] ? mapStatistic[selectedYear] : []}
+            statistic={mapStatistic && selectedYear && mapStatistic[selectedYear]
+              ? mapStatistic[selectedYear] : []}
             regions={mapRegions}
             selectedYear={selectedYear}
             handleTooltipChange={setTooltip}
             selectedIndicators={selectedIndicators}
             indicatorsColors={indicatorsColors}
+            mainMapColor={mainMapColor}
+            mapBorderColor={mapBorderColor}
+            mapFontSize={mapFontSize}
+            legendFontSize={legendFontSize}
+            legendFontColor={legendFontColor}
           />
         )
       }

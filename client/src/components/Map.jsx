@@ -38,6 +38,13 @@ const Map = (props) => {
     colors,
     colorsCount,
     isRegionsSigned,
+    mainMapColor,
+    mapFontColor,
+    mapBorderColor,
+    mapFontSize,
+    legendFontSize,
+    isRegionNames3Letters,
+    legendFontColor,
   } = props;
   console.log('isRegionsSigned', isRegionsSigned);
 
@@ -93,11 +100,11 @@ const Map = (props) => {
 
   const colorScale = (value) => {
     if (isLegendIntervaled) {
-      return statistic ? quantize(value) : '#F5F4F6';
+      return statistic ? quantize(value) : mainMapColor;
     }
     return statistic ? (scaleLinear()
       .domain([statistic.min, statistic.max])
-      .range(colors))(value) : '#F5F4F6';
+      .range(colors))(value) : mainMapColor;
   };
 
   const legendItemsCount = 5;
@@ -129,10 +136,11 @@ const Map = (props) => {
         >
           <span style={
             {
-              fontSize: '13px',
+              fontSize: `${legendFontSize}px`,
               lineHeight: '20px',
               fontStyle: 'normal',
               fontWeight: 400,
+              color: legendFontColor,
             }
           }
           >
@@ -142,7 +150,7 @@ const Map = (props) => {
         <ul style={{ listStyle: 'none' }}>
           <li style={{ display: 'flex', alignItems: 'flex-start', margin: '8px' }}>
             <div style={{
-              background: '#F5F4F6',
+              background: mainMapColor,
               width: '18px',
               height: '18px',
               marginRight: '8px',
@@ -152,10 +160,11 @@ const Map = (props) => {
             />
             <span style={
               {
-                fontSize: '17px',
+                fontSize: `${legendFontSize}px`,
                 lineHeight: '28px',
                 fontStyle: 'normal',
                 fontWeight: 400,
+                color: legendFontColor,
               }
             }
             >
@@ -177,10 +186,11 @@ const Map = (props) => {
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <span style={
                 {
-                  fontSize: '17px',
+                  fontSize: `${legendFontSize}px`,
                   lineHeight: '28px',
                   fontStyle: 'normal',
                   fontWeight: 400,
+                  color: legendFontColor,
                 }
               }
                 >
@@ -240,7 +250,7 @@ const Map = (props) => {
                   const color = statistic
                 && Object.keys(statistic.values || {}).length > 0
                 && statistic.values[geo.properties.id]
-                    ? colorScale(statistic.values[geo.properties.id].value) : '#F5F4F6';
+                    ? colorScale(statistic.values[geo.properties.id].value) : mainMapColor;
                   return (
                     <Geography
                       key={geo.rsmKey}
@@ -259,19 +269,19 @@ const Map = (props) => {
                         default: {
                           fill: color,
                           outline: 'none',
-                          stroke: '#FFF',
+                          stroke: mapBorderColor,
                           strokeWidth: '0.5',
                         },
                         pressed: {
                           fill: color,
                           outline: 'none',
-                          stroke: '#FFF',
+                          stroke: mapBorderColor,
                           strokeWidth: '0.5',
                         },
                         hover: {
                           fill: color,
                           outline: 'none',
-                          stroke: '#FFF',
+                          stroke: mapBorderColor,
                           strokeWidth: '0.5',
                         },
                       }}
@@ -283,7 +293,6 @@ const Map = (props) => {
                   );
                 })}
                 {isRegionsSigned && geographies.map((geo) => {
-                  console.log('isRegionsSigned', geo);
                   const centroid = geoCentroid(geo);
                   const cur = regions[geo.properties.id];
                   return (
@@ -300,8 +309,8 @@ const Map = (props) => {
                         handleTooltipChange(null);
                       }}
                     >
-                      <text x={-12} fontSize={8} alignmentBaseline="middle">
-                        {cur.reg_alias_short_3letters}
+                      <text x={isRegionNames3Letters ? -12 : -8} fontSize={mapFontSize} alignmentBaseline="middle" fill={mapFontColor}>
+                        {isRegionNames3Letters ? cur.reg_alias_short_3letters : cur.reg_alias_short_2letters}
                       </text>
                     </Marker>
                   //                 <Annotation
@@ -364,8 +373,14 @@ function areEqual(prevProps, nextProps) {
     || prevProps.statistic !== nextProps.statistic
     || prevProps.isLegendIntervaled !== nextProps.isLegendIntervaled
     || prevProps.colors !== nextProps.colors
-    || prevProps.colors !== nextProps.colors
     || prevProps.isRegionsSigned !== nextProps.isRegionsSigned
+    || prevProps.mainMapColor !== nextProps.mainMapColor
+    || prevProps.mapFontColor !== nextProps.mapFontColor
+    || prevProps.mapBorderColor !== nextProps.mapBorderColor
+    || prevProps.mapFontSize !== nextProps.mapFontSize
+    || prevProps.legendFontSize !== nextProps.legendFontSize
+    || prevProps.isRegionNames3Letters !== nextProps.isRegionNames3Letters
+    || prevProps.legendFontColor !== nextProps.legendFontColor
   ) return false;
   return true;
 }

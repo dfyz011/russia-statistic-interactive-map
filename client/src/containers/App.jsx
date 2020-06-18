@@ -4,7 +4,6 @@ import {
   Tab,
   Paper,
   Box,
-  Typography,
   Container,
   LinearProgress,
   FormControl,
@@ -26,45 +25,7 @@ import IndicatorRating from './IndicatorRating';
 import DiagramsTab from './DiagramsTab';
 import IndicatorSelectorCard from '../components/IndicatorSelectorCard';
 
-// const useStyles = {
-//   formControl: {
-//     // margin: theme.spacing(1),
-//     width: '100%',
-//   },
-//   AppBar: {
-//     backgroundColor: 'gray',
-//   },
-//   chips: {
-//     display: 'flex',
-//     flexWrap: 'wrap',
-//   },
-//   chip: {
-//     margin: 2,
-//   },
-//   tableHead: {
-//     backgroundColor: 'gray',
-//     fontWeight: 'bold',
-//   },
-// };
-
-function TabPanel(props) {
-  const {
-    children, value, index, ...other
-  } = props;
-
-  return (
-    <Typography
-      component="div"
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box p={3}>{children}</Box>}
-    </Typography>
-  );
-}
+import TabPanel from '../components/TabPanel';
 
 function getTabProps(index) {
   return {

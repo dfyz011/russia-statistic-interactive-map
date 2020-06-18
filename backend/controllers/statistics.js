@@ -41,8 +41,6 @@ exports.findByIndicator = async (req, res) => {
     const regionsFilter = selectedRegions && selectedRegions.length > 0
       ? { region_id: { [Op.in]: [...selectedRegions] } }
       : {};
-    console.log(yearsFilter);
-    console.log(selectedYears);
 
     const regionStatisticFilter = {
       indicator_id: parseInt(indicatorId),
@@ -332,7 +330,6 @@ exports.findByIndicatorsForMap = async (req, res) => {
       }
       return r;
     }, {});
-    console.log('groupedResult', groupedResult);
     const regions = await Region.findAll({
       where: {
         reg_type: 'Регион'
@@ -492,13 +489,15 @@ exports.findByRegionForTop = async (req, res) => {
           },
         ],
         order: [
-          ['value', 'ASC'],
+          // ['value', 'ASC'],
           [Indicator, 'title', 'ASC'],
         ],
       });
-      regionTop.push({ ...stat.dataValues, place: indicatorTop.findIndex((el) => el.region_id === parseInt(regionId)) + 1 });
+      const indicatorTopSorted = indicatorTop.sort((a, b) => {
+        return parseFloat(a.value) - parseFloat(b.value);
+      });
+      regionTop.push({ ...stat.dataValues, place: indicatorTopSorted.findIndex((el) => el.region_id === parseInt(regionId)) + 1 });
     }
-    console.log('regionTop', regionTop);
     res.json({ statistic: regionTop });
   } catch (err) {
     console.error(err);
@@ -542,12 +541,16 @@ exports.findByIndicatorForTop = async (req, res) => {
         },
       ],
       order: [
-        ['value', 'ASC'],
+        // ['value', 'ASC'],
         [Region, 'reg_alias_human_name', 'ASC'],
       ],
     });
 
-    const ar = result.map((stat, index) => {
+    const resultSorted = result.sort((a, b) => {
+      return parseFloat(a.value) - parseFloat(b.value);
+    });
+
+    const ar = resultSorted.map((stat, index) => {
       return { ...stat.dataValues, place: index + 1 };
     });
     res.json({ statistic: ar });

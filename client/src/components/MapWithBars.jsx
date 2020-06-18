@@ -30,6 +30,10 @@ const Map = (props) => {
     regions,
     selectedYear,
     indicatorsColors,
+    mainMapColor,
+    mapBorderColor,
+    legendFontSize,
+    legendFontColor,
   } = props;
 
   const [selectedRegion, setSelectedRegion] = useState(null);
@@ -111,10 +115,11 @@ const Map = (props) => {
       >
         <span style={
           {
-            fontSize: '13px',
+            fontSize: `${legendFontSize}px`,
             lineHeight: '20px',
             fontStyle: 'normal',
             fontWeight: 400,
+            color: legendFontColor,
           }
         }
         >
@@ -122,6 +127,8 @@ const Map = (props) => {
         </span>
         <ul style={{ listStyle: 'none' }}>
           {statisticIndicators.map((item, index) => {
+            console.log('statisticIndicatorsItem', item);
+            console.log('statisticIndicatorsItem', indicatorsColors[item]);
             return (
               <li key={index} style={{ display: 'flex', alignItems: 'flex-start', margin: '8px' }}>
                 <div style={{
@@ -130,10 +137,11 @@ const Map = (props) => {
                 />
                 <span style={
                 {
-                  fontSize: '17px',
+                  fontSize: `${legendFontSize}px`,
                   lineHeight: '28px',
                   fontStyle: 'normal',
                   fontWeight: 400,
+                  color: legendFontColor,
                 }
               }
                 >
@@ -170,7 +178,6 @@ const Map = (props) => {
             {({ geographies }) => (
               <>
                 {geographies.map((geo, i) => {
-                  const color = 'rgb(223, 223, 223)';
                   return (
                     <Geography
                       key={geo.rsmKey}
@@ -189,21 +196,21 @@ const Map = (props) => {
                       geography={geo}
                       style={{
                         default: {
-                          fill: color,
+                          fill: mainMapColor,
                           outline: 'none',
-                          stroke: '#FFF',
+                          stroke: mapBorderColor,
                           strokeWidth: '0.5',
                         },
                         pressed: {
-                          fill: color,
+                          fill: mainMapColor,
                           outline: 'none',
-                          stroke: '#FFF',
+                          stroke: mapBorderColor,
                           strokeWidth: '0.5',
                         },
                         hover: {
-                          fill: color,
+                          fill: mainMapColor,
                           outline: 'none',
-                          stroke: '#FFF',
+                          stroke: mapBorderColor,
                           strokeWidth: '0.5',
                         },
                       }}
@@ -313,6 +320,15 @@ function areEqual(prevProps, nextProps) {
   if (
     prevProps.isTooltipOpen !== nextProps.isTooltipOpen
     || prevProps.statistic !== nextProps.statistic
+    || prevProps.isRegionsSigned !== nextProps.isRegionsSigned
+    || prevProps.mainMapColor !== nextProps.mainMapColor
+    || prevProps.mapFontColor !== nextProps.mapFontColor
+    || prevProps.mapBorderColor !== nextProps.mapBorderColor
+    || prevProps.mapFontSize !== nextProps.mapFontSize
+    || prevProps.legendFontSize !== nextProps.legendFontSize
+    || prevProps.isRegionNames3Letters !== nextProps.isRegionNames3Letters
+    || prevProps.indicatorsColors !== nextProps.indicatorsColors
+    || prevProps.legendFontColor !== nextProps.legendFontColor
   ) return false;
   return true;
 }
