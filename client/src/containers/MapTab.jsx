@@ -21,8 +21,6 @@ import { getStatisticByIndicator, getStatisticForMap } from '../actions/statisti
 
 import { withSettingsPanel } from './withSettingsPanel';
 
-import { randomColor } from '../constants/helpers';
-
 function timeout(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }

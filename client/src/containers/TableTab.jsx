@@ -13,11 +13,12 @@ import {
   Input,
   Grid,
   Typography,
+  Menu,
 } from '@material-ui/core';
 import MainTable from './MainTable';
 import StatisticHeader from '../components/StatisticHeader';
 import { getStatisticByIndicator } from '../actions/statisticAction';
-import { exportToJson } from '../constants/helpers';
+import { exportToJson, exportToCSV, exportToXLSX } from '../constants/helpers';
 
 
 const TableTab = ({
@@ -25,6 +26,7 @@ const TableTab = ({
 }) => {
   const [selectedYears, setSelectedYears] = React.useState([]);
   const [selectedRegions, setSelectedRegions] = React.useState([]);
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   useEffect(() => {
     if (selectedRegions.length === 0) {
@@ -51,6 +53,14 @@ const TableTab = ({
   const handleSelectedRegions = (event) => {
     setSelectedRegions(event.target.value);
     getStatisticByIndicator({ indicator: currentIndicator, years: selectedYears, regions: event.target.value });
+  };
+
+  const handleSaveClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleSaveClose = () => {
+    setAnchorEl(null);
   };
 
   return (
@@ -95,7 +105,7 @@ const TableTab = ({
         </Grid>
         <Grid item xs={7} style={{ paddingRight: '0px' }}>
           <Grid container alignItems="center" justify="flex-end">
-            <Grid xs={10} item style={{ paddingRight: '10px' }}>
+            <Grid xs={9} item style={{ paddingRight: '10px' }}>
               <FormControl fullWidth>
                 <InputLabel shrink id="years-select-label">
                   Годы
@@ -134,16 +144,50 @@ const TableTab = ({
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={2}>
+            <Grid item xs={3}>
               <Button
                 variant="contained"
                 color="primary"
                 size="medium"
                 startIcon={<SaveIcon />}
-                onClick={() => { exportToJson(statistic); }}
+                onClick={handleSaveClick}
               >
-                Save
+                Сохранить
               </Button>
+              <Menu
+                anchorEl={anchorEl}
+                getContentAnchorEl={null}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'center',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'center',
+                }}
+                keepMounted
+                open={Boolean(anchorEl)}
+                onClose={handleSaveClose}
+              >
+                <MenuItem onClick={() => {
+                  exportToJson(statistic);
+                }}
+                >
+                  JSON
+                </MenuItem>
+                <MenuItem onClick={() => {
+                  exportToCSV(statistic);
+                }}
+                >
+                  CSV
+                </MenuItem>
+                <MenuItem onClick={() => {
+                  exportToXLSX(statistic);
+                }}
+                >
+                  XLSX (Excel)
+                </MenuItem>
+              </Menu>
             </Grid>
           </Grid>
         </Grid>

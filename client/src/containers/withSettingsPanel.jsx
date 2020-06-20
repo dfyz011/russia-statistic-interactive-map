@@ -13,6 +13,7 @@ import {
   FormControlLabel,
 } from '@material-ui/core';
 import SettingsIcon from '@material-ui/icons/Settings';
+import { randomColor } from '../constants/helpers';
 import ColorPickerButton from '../components/ColorPickerButton';
 import TabPanel from '../components/TabPanel';
 
@@ -126,7 +127,7 @@ export function withSettingsPanel(WrappedComponent) {
         const difference = prevState.selectedIndicators.length - (newValue.length || 0);
         const newColors = difference > 0
           ? [...prevState.indicatorsColors.splice(0, newValue.length)]
-          : [...prevState.indicatorsColors, ...new Array(Math.abs(difference)).fill('#FFF')];
+          : [...prevState.indicatorsColors, ...new Array(Math.abs(difference)).fill(randomColor())];
         return ({ ...prevState, selectedIndicators: newValue, indicatorsColors: newColors });
       });
     };

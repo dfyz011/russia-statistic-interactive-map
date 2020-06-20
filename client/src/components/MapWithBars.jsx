@@ -255,7 +255,7 @@ const Map = (props) => {
                               y={-height}
                               width={barWidth}
                               height={height}
-                              fill={indicatorsColors[indicator]}
+                              fill={indicatorsColors[indicator] || '#FFF'}
                             />
                           </Marker>
                         );
