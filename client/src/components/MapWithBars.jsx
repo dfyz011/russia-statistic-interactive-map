@@ -123,7 +123,7 @@ const Map = (props) => {
           }
         }
         >
-          {'Метрики'}
+          {'Индикаторы'}
         </span>
         <ul style={{ listStyle: 'none' }}>
           {statisticIndicators.map((item, index) => {

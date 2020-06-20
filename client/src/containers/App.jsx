@@ -150,7 +150,7 @@ function App({
                       style={{ flexDirection: 'row' }}
                     >
                       <FormControlLabel value="region" control={<Radio />} label="Региону" />
-                      <FormControlLabel value="indicator" control={<Radio />} label="Метрике" />
+                      <FormControlLabel value="indicator" control={<Radio />} label="Индикатору" />
                     </RadioGroup>
                   </FormControl>
                   {

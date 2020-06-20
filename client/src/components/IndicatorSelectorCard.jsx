@@ -48,7 +48,7 @@ const IndicatorSelectorCard = ({
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Категории метрик"
+                  label="Категории индикаторов"
                   InputLabelProps={{ shrink: true }}
                 />
               )}
@@ -67,7 +67,7 @@ const IndicatorSelectorCard = ({
           <Grid item>
             <VirtualizedSelect
               id="grouped-select"
-              label="Метрика"
+              label="Индикатор"
               value={currentIndicator || ''}
               options={indicators || []}
               onChange={handleCurrentIndicatorChange}

@@ -168,7 +168,7 @@ const MapTab = ({
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Метрики"
+                label="Индикаторы"
                 InputLabelProps={{ shrink: true }}
               />
             )}

@@ -58,7 +58,7 @@ const IndicatorRating = ({
         <Grid item xs={4}>
           <FormControl fullWidth>
             <InputLabel shrink id="indicator-select-label">
-              Метрика
+              Индикатор
             </InputLabel>
             <Select
               labelId="indicator-select-label"
