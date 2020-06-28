@@ -11,6 +11,8 @@ import {
 } from '@material-ui/core';
 import IndicatorTable from './IndicatorTable';
 import { getStatisticForIndicatorTop } from '../actions/statisticAction';
+import VirtualizedSelect from '../components/VertualizedSelect';
+
 
 const IndicatorRating = ({
   years,
@@ -44,8 +46,8 @@ const IndicatorRating = ({
     setSelectedYear(event.target.value);
   };
 
-  const handleSelectedIndicator = (event) => {
-    setSelectedIndicator(event.target.value);
+  const handleSelectedIndicator = (event, newValue) => {
+    setSelectedIndicator(newValue);
   };
 
   return (
@@ -56,34 +58,13 @@ const IndicatorRating = ({
         justify="space-between"
       >
         <Grid item xs={4}>
-          <FormControl fullWidth>
-            <InputLabel shrink id="indicator-select-label">
-              Индикатор
-            </InputLabel>
-            <Select
-              labelId="indicator-select-label"
-              value={selectedIndicator}
-              onChange={handleSelectedIndicator}
-              input={<Input />}
-              MenuProps={{
-                anchorOrigin: {
-                  vertical: 'bottom',
-                  horizontal: 'left',
-                },
-                transformOrigin: {
-                  vertical: 'top',
-                  horizontal: 'left',
-                },
-                getContentAnchorEl: null,
-              }}
-            >
-              {indicators && indicators.map((indicator) => (
-                <MenuItem key={indicator.id} value={indicator}>
-                  <ListItemText primary={indicator.title} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+          <VirtualizedSelect
+            id="grouped-select"
+            label="Индикатор"
+            value={selectedIndicator || ''}
+            options={indicators || []}
+            onChange={handleSelectedIndicator}
+          />
         </Grid>
         <Grid item xs={7} style={{ paddingRight: '0px' }}>
           <FormControl fullWidth>

@@ -168,8 +168,8 @@ export function withSettingsPanel(WrappedComponent) {
             ref={this.settingsButton}
             style={{
               position: 'absolute',
-              top: '10%',
               // left: '10%',
+              bottom: '607px',
               zIndex: '1',
             }}
           >
@@ -458,7 +458,6 @@ export function withSettingsPanel(WrappedComponent) {
               handleSelectedIndicatorsChange={this.handleSelectedIndicatorsChange}
               legendFontColor={legendFontColor}
               indicatorsColors={selectedIndicators.reduce((r, a, index) => {
-                console.log('indicatorsColors', indicatorsColors);
                 r[a.id] = indicatorsColors[index];
                 return r;
               }, {})}

@@ -111,6 +111,7 @@ const Map = (props) => {
           background: 'white',
           position: 'absolute',
           right: 0,
+          maxWidth: '400px',
         }}
       >
         <span style={
@@ -127,8 +128,6 @@ const Map = (props) => {
         </span>
         <ul style={{ listStyle: 'none' }}>
           {statisticIndicators.map((item, index) => {
-            console.log('statisticIndicatorsItem', item);
-            console.log('statisticIndicatorsItem', indicatorsColors[item]);
             return (
               <li key={index} style={{ display: 'flex', alignItems: 'flex-start', margin: '8px' }}>
                 <div style={{

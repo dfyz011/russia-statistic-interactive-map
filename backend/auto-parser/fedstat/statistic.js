@@ -120,16 +120,7 @@ const getSDMXStatisticFile = async (postBody) => {
 
 const getStatisticByIndicator = async (indicator) => {
   console.log(`http://fedstat.ru/indicator/${indicator.id}`);
-  const [newIndicator, newIndicatorCreated] = await Indicator.findOrCreate({
-    where: {
-      title: indicator.title,
-    },
-    defaults: {
-      title: indicator.title,
-      createdAt: new Date(),
-      updatedAt: new Date()
-    }
-  });
+
   const [mainCategory, mainCategoryCreated] = await Category.findOrCreate({
     where: {
       title: 'ЕМИСС',
@@ -140,69 +131,75 @@ const getStatisticByIndicator = async (indicator) => {
       updatedAt: new Date()
     }
   });
-  for (const category of indicator.categories) {
-    const [newCategory, newCategoryCreated] = await Category.findOrCreate({
-      where: {
-        title: category,
-      },
-      defaults: {
-        title: category,
-        category_id: mainCategory.id,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    });
-    const [newIndicatorCategory, newIndicatorCategoryCreated] = await Indicators_categories.findOrCreate({
-      where: {
-        indicator_id: newIndicator.id,
-        category_id: newCategory.id
-      },
-      defaults: {
-        indicator_id: newIndicator.id,
-        category_id: newCategory.id,
-        createdAt: new Date(),
-        updatedAt: new Date()
-      }
-    });
-  }
 
   const allStatistic = [];
   const postBody = await getPostBodyForIndicator(indicator);
+  // const rawdata = fs.readFileSync('27.06.2020, 23:05:02Data.txt');
+  // const { statistic, indicators } = JSON.parse(rawdata);
   for (const part of postBody) {
     console.log('part');
     const sdmx = await getSDMXStatisticFile(part);
     console.log('sdmx');
     const json = convert.xml2json(sdmx, { compact: false, spaces: 4 });
+    fs.writeFile(`${new Date().toLocaleString()}${indicator.id}${indicator.title.slice(0, 10)}.txt`, json, (err) => {
+      if (err) throw err;
+    });
     console.log('json');
+    const сodeLists = JSON.parse(json).elements[0].elements.find((element) => element.name === 'CodeLists');
+    const listOfSeriesKeys = {};
+    for (const codeList of сodeLists.elements) {
+      const codeListName = codeList.elements.find((element) => element.name === 'structure:Name').elements[0].text;
+      listOfSeriesKeys[codeList.attributes.id] = { name: codeListName, codes: {} };
+      const codeListCodes = codeList.elements.filter((element) => element.name === 'structure:Code');
+      for (const code of codeListCodes) {
+        const codeValue = code.attributes.value;
+        const description = code.elements.find((element) => element.name === 'structure:Description').elements[0].text;
+        listOfSeriesKeys[codeList.attributes.id].codes[codeValue] = description;
+      }
+    }
+    const regionKey = Object.keys(listOfSeriesKeys).find((element) => {
+      return ['s_OKATO', '00_003', 'mОКАТО', 'ref_18_rf', '30-ОКАТО', 'FO'].includes(element);
+    });
+    if (!regionKey) {
+      continue;
+    }
     const statistics = JSON.parse(json).elements[0].elements.find((element) => element.name === 'DataSet');
     // fs.writeFile('Output2.txt', JSON.stringify(statistics), (err) => {
     //   if (err) throw err;
     // });
-    console.log('statistics');
+
     const statisticArray = [];
     const newRegions = [];
     for (const statistic of statistics.elements) {
       const data = statistic.elements;
+
       const seriesKeys = data.find((element) => element.name === 'generic:SeriesKey').elements;
-      const attributes = data.find((element) => element.name === 'generic:Attributes').elements;
-      const observations = data.find((element) => element.name === 'generic:Obs').elements;
 
-      // console.log('seriesKeys', seriesKeys);
-      const { concept: keyConcept, value: keyValue } = seriesKeys[0].attributes;
-      if (keyConcept === 's_OKVED' || keyConcept === 'АП') break;
-      if (`${keyValue}`.length !== 2) continue;
+      const regionKeyIndex = seriesKeys.findIndex((element) => {
+        if (element.attributes && element.attributes.concept) {
+          return element.attributes.concept === regionKey;
+        }
+        return false;
+      });
+      if (regionKeyIndex === -1) {
+        continue;
+      }
+      const {
+        concept:
+        regionKeyConcept, value: regionKeyValue
+      } = seriesKeys[regionKeyIndex].attributes;
 
-      const extendedOKATO = `${keyValue}${'0'.repeat(`${keyValue}`.length >= 11 ? 0 : 11 - `${keyValue}`.length)}`;
+      const extendedOKATO = `${regionKeyValue}${'0'.repeat(`${regionKeyValue}`.length >= 11 ? 0 : 11 - `${regionKeyValue}`.length)}`;
       const region = await Region.findOne({
         where: {
           [Op.or]: [
             {
               reg_alias_okato: {
-                [Op.or]: [keyValue, extendedOKATO]
+                [Op.or]: [regionKeyValue, extendedOKATO]
               }
             },
             {
-              reg_kladr_id: keyValue
+              reg_kladr_id: regionKeyValue
             },
           ]
         }
@@ -211,10 +208,57 @@ const getStatisticByIndicator = async (indicator) => {
         // if (regionKladrId === '442014') {
         //   console.log(placeOfSearch.name, tabType.name, mode, year);
         // }
-        newRegions.push(keyValue);
+        newRegions.push(regionKeyValue);
         continue;
         // process.exit(0);
       }
+
+      const indicatorName = seriesKeys.reduce((accumulator, currentValue) => {
+        const curConcept = currentValue.attributes.concept;
+        if (curConcept === regionKey) return accumulator;
+        const curValue = currentValue.attributes.value;
+        const partName = `${listOfSeriesKeys[curConcept].name}: ${listOfSeriesKeys[curConcept].codes[curValue]}`;
+        return `${accumulator}|${partName}`;
+      }, indicator.title).replace(/\s+/g, ' ');
+      const [newIndicator, newIndicatorCreated] = await Indicator.findOrCreate({
+        where: {
+          title: indicatorName,
+        },
+        defaults: {
+          title: indicatorName,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        }
+      });
+      console.log('newIndicator.id', newIndicator.id);
+      for (const category of indicator.categories) {
+        const [newCategory, newCategoryCreated] = await Category.findOrCreate({
+          where: {
+            title: category,
+          },
+          defaults: {
+            title: category,
+            category_id: mainCategory.id,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+        const [newIndicatorCategory, newIndicatorCategoryCreated] = await Indicators_categories.findOrCreate({
+          where: {
+            indicator_id: newIndicator.id,
+            category_id: newCategory.id
+          },
+          defaults: {
+            indicator_id: newIndicator.id,
+            category_id: newCategory.id,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+      }
+
+      const attributes = data.find((element) => element.name === 'generic:Attributes').elements;
+      const observations = data.find((element) => element.name === 'generic:Obs').elements;
 
       const measurementUnit = attributes.find((element) => element.attributes.concept === 'EI').attributes.value;
 
@@ -250,7 +294,7 @@ const getStatisticByIndicator = async (indicator) => {
           }
         });
         if (!newStatisticCreated && newStatistic.value !== value) {
-          console.log('dublicate-count', newStatisticCreated, newStatistic.value,);
+          console.log('dublicate-count', newStatisticCreated);
           console.log(newStatistic.region_id, newStatistic.indicator_id, newStatistic.value, newStatistic.year);
           console.log(region.reg_ID, newIndicator.id, value, `${parseInt(year)}`);
           const dublicateOfStatistic = await Region_statistic.create({
@@ -270,7 +314,7 @@ const getStatisticByIndicator = async (indicator) => {
       // console.log(attributes);
       // console.log(obs);
       statisticArray.push({
-        keyConcept, keyValue, year, period, value, measurementUnit,
+        regionKeyConcept, regionKeyValue, year, period, value, measurementUnit,
       });
     }
     allStatistic.push(statisticArray);
@@ -284,16 +328,23 @@ const getStatisticByIndicator = async (indicator) => {
 
 
 const getAllStatistic = async () => {
-  const indicators = await parseIndicators();
+  // const indicators = await parseIndicators();
+  // fs.writeFile(`${new Date().toLocaleString()}Indicators.txt`, JSON.stringify(indicators), (err) => {
+  //   if (err) throw err;
+  // });
+  const rawdata = fs.readFileSync('28.06.2020, 15:57:43Indicators.txt');
+  const indicators = JSON.parse(rawdata);
   const errors = [];
   for (const [index, indicator] of indicators.entries()) {
     try {
-      console.log(indicator.title);
       console.log(index);
       // https://fedstat.ru/indicator/40472
       // 52,21,55,103,116,128,137,167,168,210
-      if (index < 369) {
+      if (index < 39) {
         continue;
+      }
+      if (index > 45) {
+        break;
       }
       const statistic = await getStatisticByIndicator(indicator);
     // console.log(statistic);
@@ -305,19 +356,6 @@ const getAllStatistic = async () => {
   fs.writeFile('Errors.json', JSON.stringify(errors), (err) => {
     if (err) throw err;
   });
-  // const [parentGroup, parentGroupCreated] = await Indicator_group.findOrCreate(
-  //   {
-  //     where: {
-  //       name: placeOfSearch.name,
-  //     },
-  //     defaults: {
-  //       title: placeOfSearch.title,
-  //       name: placeOfSearch.name,
-  //       createdAt: new Date(),
-  //       updatedAt: new Date()
-  //     }
-  //   }
-  // );
 };
 
 getAllStatistic();

@@ -321,7 +321,7 @@ exports.findByIndicatorsForMap = async (req, res) => {
       r[a.year] = r[a.year] || {};
       r[a.year][a.indicator_id] = r[a.year][a.indicator_id] || { min: Infinity, max: -Infinity, values: {} };
       r[a.year][a.indicator_id].values[a.Region.reg_alias_fias_id] = a;
-      const currentValue = parseFloat(a.value);
+      const currentValue = parseFloat(`${a.value}`.replace(',', '.'));
       if (currentValue > r[a.year][a.indicator_id].max) {
         r[a.year][a.indicator_id].max = currentValue;
       }

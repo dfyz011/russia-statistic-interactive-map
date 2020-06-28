@@ -14,10 +14,15 @@ const parseBudget = async () => {
   });
 
   await page.evaluate(async () => {
+    await new Promise(((resolve) => {
+      setTimeout(resolve, 100);
+    }));
     const periodSwitcher = document.querySelector('div .switcher0 .view-switcher');
     const yearPeriod = periodSwitcher.children[1];
     await yearPeriod.click();
-
+    await new Promise(((resolve) => {
+      setTimeout(resolve, 100);
+    }));
     const typeSwitcher = document.querySelector('div .switcher1 .view-switcher');
     const regionType = typeSwitcher.children[1];
     await regionType.click();
@@ -42,7 +47,12 @@ const parseBudget = async () => {
     const regionsDropdownId = await document.querySelector('div .visualParamTerritory input').getAttribute('aria-owns').split(' ')[1];
     const regionsDropdownElements = Array.prototype.slice.call(document.querySelectorAll(`#${regionsDropdownId} li`));
     const statistic = {};
+    let i = 0;
     for (const regionName of regionsDropdownElements) {
+      i++;
+      if (i < 40 && i <= 10) {
+        continue;
+      }
       await document.querySelector('div .year-list .x-form-field').click();
       await new Promise(((resolve) => {
         setTimeout(resolve, 100);
@@ -117,7 +127,7 @@ const parseBudget = async () => {
         }
       }
     }
-    return { statistic, indicators: ['yтверждено', 'исполнено'] };
+    return { statistic, indicators: ['утверждено', 'исполнено'] };
   });
 
 

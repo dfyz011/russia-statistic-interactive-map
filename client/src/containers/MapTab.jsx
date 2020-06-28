@@ -17,6 +17,7 @@ import MapWithBars from '../components/MapWithBars';
 import IndicatorModal from '../components/IndicatorModal';
 import IndicatorsModal from '../components/IndicatorsModal';
 import StatisticHeader from '../components/StatisticHeader';
+import VirtualizedMultiSelect from '../components/VirtualizedMultiSelect';
 import { getStatisticByIndicator, getStatisticForMap } from '../actions/statisticAction';
 
 import { withSettingsPanel } from './withSettingsPanel';
@@ -47,7 +48,6 @@ const MapTab = ({
   isRegionNames3Letters,
   indicatorsColors,
 }) => {
-  console.log('Render', indicatorsColors);
   const [selectedIndicators, setSelectedIndicators] = React.useState([]);
   const [selectedYear, setSelectedYear] = React.useState(0);
 
@@ -137,49 +137,15 @@ const MapTab = ({
       </Grid> */}
       {
         isBar && (
-          <Autocomplete
+          <VirtualizedMultiSelect
             style={{
               paddingBottom: '16px',
             }}
+            id="grouped-select"
+            label="Индикаторы"
             options={indicators}
-            multiple
             onChange={handleSelectedIndicators}
             value={selectedIndicators}
-            noOptionsText="Не найдено"
-            disableCloseOnSelect
-              // renderTags={() => {}}
-              // renderTags={(value, getTagProps) => (
-              //   <div>
-              //     <span style={{ whiteSpace: 'nowrap' }}>
-              //       {`${value.map((reg) => reg.reg_alias_human_name).join(', ')}`}
-              //     </span>
-              //   </div>
-              // )}
-            renderTags={(value, getTagProps) => (
-              <div className="chips">
-                {value.map((indicator) => (
-                  <Chip key={indicator.id} label={indicator.title} className="chips" />
-                ))}
-              </div>
-            )}
-            getOptionLabel={(option) => option.title}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Индикаторы"
-                InputLabelProps={{ shrink: true }}
-              />
-            )}
-            renderOption={(option, { selected }) => (
-              <>
-                <Checkbox
-                  style={{ marginRight: 8 }}
-                  checked={selected}
-                />
-                {option.title}
-              </>
-            )}
-            getOptionSelected={(option, value) => value.id === option.id}
           />
         )
       }

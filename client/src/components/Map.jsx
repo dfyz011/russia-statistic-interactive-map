@@ -46,7 +46,6 @@ const Map = (props) => {
     isRegionNames3Letters,
     legendFontColor,
   } = props;
-  console.log('isRegionsSigned', isRegionsSigned);
 
   const [selectedRegion, setSelectedRegion] = React.useState(null);
 
@@ -110,7 +109,7 @@ const Map = (props) => {
   const legendItemsCount = 5;
 
   const step = statistic && statistic.max
-    ? (statistic.max - statistic.min) / (legendItemsCount - 1) : 0;
+    ? Math.abs(statistic.max - statistic.min) / (legendItemsCount - 1) : 0;
   const legendItems = statistic && statistic.max
     ? Array.from(Array(legendItemsCount).keys(), item => (statistic.min + item * step).toFixed(2))
     : [];
@@ -175,7 +174,7 @@ const Map = (props) => {
             <li key={index} style={{ display: 'flex', alignItems: 'flex-start', margin: '8px' }}>
               <div style={{
                 background: isLegendIntervaled
-                  ? item : colorScale(item),
+                  ? item : colorScale(`${item}`.replace(',', '.')),
                 width: '18px',
                 height: '18px',
                 marginRight: '8px',
@@ -197,13 +196,13 @@ const Map = (props) => {
                   {`${
                     (isLegendIntervaled
                       ? (
-                        `${addOrdinalToNumber((quantize && quantize.invertExtent(item)[0])
+                        `${addOrdinalToNumber((quantize && quantize.invertExtent(`${item}`.replace(',', '.'))[0])
                           || 0)}
                           -
-                          ${addOrdinalToNumber((quantize && quantize.invertExtent(item)[1])
+                          ${addOrdinalToNumber((quantize && quantize.invertExtent(`${item}`.replace(',', '.'))[1])
                           || 0)}`
                       )
-                      : addOrdinalToNumber(item || 0))}`}
+                      : addOrdinalToNumber(`${item}`.replace(',', '.') || 0))}`}
                 </span>
                 <span
                   style={{
@@ -250,12 +249,12 @@ const Map = (props) => {
                   const color = statistic
                 && Object.keys(statistic.values || {}).length > 0
                 && statistic.values[geo.properties.id]
-                    ? colorScale(statistic.values[geo.properties.id].value) : mainMapColor;
+                    ? colorScale(`${statistic.values[geo.properties.id].value}`.replace(',', '.')) : mainMapColor;
                   return (
                     <Geography
                       key={geo.rsmKey}
                       onMouseEnter={() => {
-                        if (statistic && statistic.values && statistic.values[geo.properties.id]) {
+                        if (statistic && statistic.values) {
                           handleTooltipChange(statistic.values[geo.properties.id]
                             || { Region: regions[geo.properties.id], year: selectedYear });
                         }
@@ -287,7 +286,7 @@ const Map = (props) => {
                       }}
                       onClick={
                       handleClick((statistic && statistic.values
-                        && statistic.values[geo.properties.id]) || null, geo)
+                        && statistic.values[geo.properties.id]) || { Region: regions[geo.properties.id], year: selectedYear }, geo)
                     }
                     />
                   );
@@ -300,7 +299,7 @@ const Map = (props) => {
                       key={`${geo.rsmKey}-name`}
                       coordinates={centroid}
                       onMouseEnter={() => {
-                        if (statistic && statistic.values && statistic.values[geo.properties.id]) {
+                        if (statistic && statistic.values) {
                           handleTooltipChange(statistic.values[geo.properties.id]
                             || { Region: regions[geo.properties.id], year: selectedYear });
                         }

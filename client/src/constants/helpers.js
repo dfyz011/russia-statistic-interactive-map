@@ -32,13 +32,11 @@ export const exportToJson = (objectData) => {
 };
 
 export const exportToCSV = (objectData) => {
-  console.log('objectData', objectData);
   const fields = ['Indicator.title', 'Region.reg_alias_human_name', 'year', 'value', 'measurement_unit'];
   const opts = { fields };
   try {
     const parser = new Parser(opts);
     const csv = parser.parse(objectData);
-    console.log(csv);
     const filename = 'export.csv';
     const contentType = 'application/json;charset=utf-8;';
     if (window.navigator && window.navigator.msSaveOrOpenBlob) {
@@ -59,7 +57,6 @@ export const exportToCSV = (objectData) => {
 };
 
 export const exportToXLSX = (objectData) => {
-  console.log('objectData', objectData);
   const flattenData = objectData.map((stat) => ({
     Индикатор: stat.Indicator.title, Регион: stat.Region.reg_alias_human_name, Год: stat.year, Значение: stat.value, 'Единицы измерения': stat.measurement_unit,
   }));
@@ -70,25 +67,28 @@ export const exportToXLSX = (objectData) => {
       name: filename,
       formateDate: 'yyyy/mm/dd',
     });
-    console.log(excel);
   } catch (err) {
     console.error(err);
   }
 };
 
 export const addOrdinalToNumber = (labelValue) => {
+  // Nine Zeroes for Trilliards
+  return Math.abs(Number(labelValue)) >= 1.0e+12
+
+    ? `${(Number(labelValue) / 1.0e+12).toFixed(2)} трлн.`
   // Nine Zeroes for Billions
-  return Math.abs(Number(labelValue)) >= 1.0e+9
+    : Math.abs(Number(labelValue)) >= 1.0e+9
 
-    ? `${(Math.abs(Number(labelValue)) / 1.0e+9).toFixed(2)} млн.`
-  // Six Zeroes for Millions
-    : Math.abs(Number(labelValue)) >= 1.0e+6
+      ? `${(Number(labelValue) / 1.0e+9).toFixed(2)} млрд.`
+    // Six Zeroes for Millions
+      : Math.abs(Number(labelValue)) >= 1.0e+6
 
-      ? `${(Math.abs(Number(labelValue)) / 1.0e+6).toFixed(2)} млрд.`
-    // Three Zeroes for Thousands
-      : Math.abs(Number(labelValue)) >= 1.0e+3
+        ? `${(Number(labelValue) / 1.0e+6).toFixed(2)} млн.`
+      // Three Zeroes for Thousands
+        : Math.abs(Number(labelValue)) >= 1.0e+3
 
-        ? `${(Math.abs(Number(labelValue)) / 1.0e+3).toFixed(2)} трлн.`
+          ? `${(Number(labelValue) / 1.0e+3).toFixed(2)} тыс.`
 
-        : Math.abs(Number(labelValue).toFixed(2));
+          : Number(labelValue).toFixed(2);
 };

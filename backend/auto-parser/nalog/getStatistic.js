@@ -107,8 +107,8 @@ const getStatistic = async ({ name, dataEncoding, structureEncoding }) => {
     structurePromise,
     datasetPromise,
   ]).then(resolvedValues => {
-    // console.log('resolvedValues', resolvedValues);
     const datasetStructure = resolvedValues[0];
+    console.log('resolvedValues', datasetStructure[0]['Unit of measure']);
     const dataset = resolvedValues[1];
     let nameOfIdField = 'Id';
     if (!Object.prototype.hasOwnProperty.call(datasetStructure[0], nameOfIdField)) {
@@ -136,7 +136,7 @@ const getStatistic = async ({ name, dataEncoding, structureEncoding }) => {
     fs.writeFile(`${name}Result.txt`, JSON.stringify(datasetWithCorrectHeaders), (err) => {
       if (err) throw err;
     });
-    return datasetWithCorrectHeaders;
+    return { result: datasetWithCorrectHeaders, measurement_unit: datasetStructure[0]['Unit of measure'] || '' };
   });
 };
 

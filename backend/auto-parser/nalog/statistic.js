@@ -90,13 +90,16 @@ const datasetsInfo = [
   );
   for (const info of datasetsInfo) {
     getStatistic(info)
-      .then(async (result) => {
-        console.log('info', info);
+      .then(async ({ result, measurement_unit }) => {
+        // console.log('result', result);
+        console.log('info', measurement_unit);
+        const correctMeasurementUnit = ['тыс.рублей', 'thousand rubles'].includes(measurement_unit) ? '₽' : '';
+        const valueMultiplier = ['тыс.рублей', 'thousand rubles'].includes(measurement_unit) ? 1000 : 1;
         const statisticKeys = Object.keys(result[0]);
         const regionColumnName = statisticKeys.find((key) => regionColumnNames.includes(key));
 
         if (regionColumnName !== 'Регион') {
-          console.log(regionColumnName);
+          // console.log(regionColumnName);
           const numericKeys = statisticKeys.filter((key) => ![regionColumnName, 'Код региона'].includes(key));
           // console.log(numericKeys);
 
@@ -142,10 +145,10 @@ const datasetsInfo = [
                   .replace(/\\n|\\r/g, '');
                 const [indicator, indicatorCreated] = await Indicator.findOrCreate({
                   where: {
-                    title: `${numericKey}`,
+                    title: `${formattedNumericKey}`,
                   },
                   defaults: {
-                    title: `${numericKey}`,
+                    title: `${formattedNumericKey}`,
                     createdAt: new Date(),
                     updatedAt: new Date()
                   }
@@ -172,20 +175,20 @@ const datasetsInfo = [
                     defaults: {
                       year: '2020',
                       indicator_id: indicator.id,
-                      value: record[numericKey],
-                      // measurement_unit: '',
+                      value: `${Number(record[numericKey].replace(/\s+/g, '')) * valueMultiplier}`,
+                      measurement_unit: correctMeasurementUnit,
                       region_id: region.reg_ID,
                       createdAt: new Date(),
                       updatedAt: new Date()
                     }
                   });
-                  if (!statisticCreated && (`${statistic.value}` !== `${record[numericKey]}`)) {
-                    console.log('dublicate-count', statisticCreated, statistic.value, record[numericKey]);
+                  if (!statisticCreated && (`${statistic.value}` !== `${Number(record[numericKey].replace(/\s+/g, '')) * valueMultiplier}`)) {
+                    console.log('dublicate-count', statisticCreated, statistic.region_id, statistic.value, record[numericKey]);
                     const dublicateOfStatistic = await Region_statistic.create({
                       year: '2020',
                       indicator_id: indicator.id,
-                      value: record[numericKey],
-                      // measurement_unit: '',
+                      value: `${Number(record[numericKey].replace(/\s+/g, '')) * valueMultiplier}`,
+                      measurement_unit: correctMeasurementUnit,
                       region_id: region.reg_ID,
                       createdAt: new Date(),
                       updatedAt: new Date()
@@ -197,7 +200,6 @@ const datasetsInfo = [
           }
         }
       });
-    // return;
     // await writeStatistic(statistic);
   }
   // await getStatistic(datasetsInfo[6]);

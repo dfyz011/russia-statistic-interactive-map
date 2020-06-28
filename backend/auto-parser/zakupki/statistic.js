@@ -21,34 +21,33 @@ async function getZakupkiStatistic(params) {
 (async () => {
   const indicators = await parseIndicators();
   console.log(indicators);
+  const [parentCategory, parentCategoryCreated] = await Category.findOrCreate(
+    {
+      where: {
+        title: 'Закупки',
+      },
+      defaults: {
+        title: 'Закупки',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
+    }
+  );
   const newRegions = [];
   for (const placeOfSearch of indicators.placesOfSearch) {
     for (const tabType of indicators.tabTypes) {
       for (const mode of indicators.modes) {
         for (const year of indicators.years) {
-          // const [parentCategory, parentCategoryCreated] = await Category.findOrCreate(
-          //   {
-          //     where: {
-          //       name: placeOfSearch.name,
-          //     },
-          //     defaults: {
-          //       title: placeOfSearch.title,
-          //       name: placeOfSearch.name,
-          //       createdAt: new Date(),
-          //       updatedAt: new Date()
-          //     }
-          //   }
-          // );
           const [category, categoryCreated] = await Category.findOrCreate(
             {
               where: {
                 name: tabType.name,
-                // category_id: parentCategory.id,
+                category_id: parentCategory.id,
               },
               defaults: {
                 title: `${tabType.title}`,
                 name: tabType.name,
-                // category_id: parentCategory.id,
+                category_id: parentCategory.id,
                 createdAt: new Date(),
                 updatedAt: new Date()
               }
@@ -109,7 +108,7 @@ async function getZakupkiStatistic(params) {
                     year: `${parseInt(year)}`,
                     indicator_id: countIndicator.id,
                     value: currentIndicator.count,
-                    measurement_unit: '%',
+                    measurement_unit: currentIndicator.countLabel.includes('Относительная экономия') ? '%' : '',
                     region_id: region.reg_ID,
                     createdAt: new Date(),
                     updatedAt: new Date()
@@ -121,7 +120,7 @@ async function getZakupkiStatistic(params) {
                     year: `${parseInt(year)}`,
                     indicator_id: countIndicator.id,
                     value: currentIndicator.count,
-                    measurement_unit: '%',
+                    measurement_unit: currentIndicator.countLabel.includes('Относительная экономия') ? '%' : '',
                     region_id: region.reg_ID,
                     createdAt: new Date(),
                     updatedAt: new Date()

@@ -21,3 +21,8 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+
+/auto-parser/nalog/*.txt
+/auto-parser/fedstat/*.txt
+/auto-parser/budget/*.txt

@@ -40,6 +40,7 @@ const IndicatorModal = ({ selectedRegion, currentIndicator, onClose }) => {
       </div>
       <div style={{
         padding: '8px 0',
+        maxWidth: '600px',
       }}
       >
         {(currentIndicator && currentIndicator.title) || ''}
@@ -69,7 +70,7 @@ const IndicatorModal = ({ selectedRegion, currentIndicator, onClose }) => {
             textAlign: 'center',
           }}
         >
-          {`${beautifulValue !== 'NaN' ? beautifulValue : 'Данных нет'}${(selectedRegion && selectedRegion.measurement_unit) || ''}`}
+          {`${beautifulValue !== 'NaN' && selectedRegion && selectedRegion.value ? beautifulValue : 'Данных нет'}${(selectedRegion && selectedRegion.measurement_unit) || ''}`}
         </div>
       </div>
       {/* <Typography>

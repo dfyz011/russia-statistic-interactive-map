@@ -1,3 +1,4 @@
+const fs = require('fs');
 const { parseBudget } = require('./indicators');
 const db = require('../../models');
 
@@ -6,11 +7,15 @@ const {
 } = db;
 const { Op } = db.Sequelize;
 
-
 (async () => {
   const { statistic, indicators } = await parseBudget();
+  fs.writeFile(`${new Date().toLocaleString()}Data.txt`, JSON.stringify({ statistic, indicators }), (err) => {
+    if (err) throw err;
+  });
   console.log(statistic, indicators);
 
+  // const rawdata = fs.readFileSync('27.06.2020, 23:05:02Data.txt');
+  // const { statistic, indicators } = JSON.parse(rawdata);
   const newRegions = [];
 
   const [category, categoryCreated] = await Category.findOrCreate(
@@ -29,6 +34,7 @@ const { Op } = db.Sequelize;
     Доходы: {},
     Расходы: {},
   };
+  const valueMultiplier = 1000000;
   for (const indicator of indicators) {
     const [incomeIndicator] = await Indicator.findOrCreate({
       where: {
@@ -55,14 +61,13 @@ const { Op } = db.Sequelize;
         updatedAt: new Date()
       }
     });
-    indicatorsRecords[indicator] = incomeIndicator;
 
-    const [spentIndicator, spentIndicatorCreated] = await Indicator.findOrCreate({
+    const [spentIndicator] = await Indicator.findOrCreate({
       where: {
         title: `Расходы ${indicator}`,
       },
       defaults: {
-        title: `Расходы  ${indicator}`,
+        title: `Расходы ${indicator}`,
         createdAt: new Date(),
         updatedAt: new Date()
       }
@@ -94,7 +99,6 @@ const { Op } = db.Sequelize;
       for (const year of Object.keys(statistic[region])) {
         for (const month of Object.keys(statistic[region][year])) {
           for (const indicator of indicators) {
-            // console.log(year, month, statistic[region][year][month]);
             const incomeIndicator = indicatorsRecords['Доходы'][indicator];
             if ((statistic[region][year][month].income[indicator] !== undefined) && (statistic[region][year][month].income[indicator] !== null)) {
               const [statisticIncome, statisticIncomeCreated] = await Region_statistic.findOrCreate({
@@ -108,20 +112,22 @@ const { Op } = db.Sequelize;
                   year: `${parseInt(year)}`,
                   month,
                   indicator_id: incomeIndicator.id,
-                  value: statistic[region][year][month].income[indicator],
-                  measurement_unit: 'млрд. руб.',
+                  value: `${Number(statistic[region][year][month].income[indicator].replace(',', '.')) * valueMultiplier}`,
+                  measurement_unit: '₽',
                   region_id: regionRecord.reg_ID,
                   createdAt: new Date(),
                   updatedAt: new Date()
                 }
               });
-              if (!statisticIncomeCreated && (`${statisticIncome.value}` !== `${statistic[region][year][month].income[indicator]}`)) {
+              if (!statisticIncomeCreated
+                && (`${statisticIncome.value}` !== `${Number(statistic[region][year][month].income[indicator].replace(',', '.')) * valueMultiplier}`)) {
+                console.log('dublicate1');
                 const dublicateOfStatistic = await Region_statistic.create({
                   year: `${parseInt(year)}`,
                   month,
                   indicator_id: incomeIndicator.id,
-                  value: statistic[region][year][month].income[indicator],
-                  measurement_unit: 'млрд. руб.',
+                  value: `${Number(statistic[region][year][month].income[indicator].replace(',', '.')) * valueMultiplier}`,
+                  measurement_unit: '₽',
                   region_id: regionRecord.reg_ID,
                   createdAt: new Date(),
                   updatedAt: new Date()
@@ -141,20 +147,22 @@ const { Op } = db.Sequelize;
                   year: `${parseInt(year)}`,
                   month,
                   indicator_id: spentIndicator.id,
-                  value: statistic[region][year][month].spent[indicator],
-                  measurement_unit: 'млрд. руб.',
+                  value: `${Number(statistic[region][year][month].spent[indicator].replace(',', '.')) * valueMultiplier}`,
+                  measurement_unit: '₽',
                   region_id: regionRecord.reg_ID,
                   createdAt: new Date(),
                   updatedAt: new Date()
                 }
               });
-              if (!statisticSpentCreated && (`${statisticSpent.value}` !== `${statistic[region][year][month].spent[indicator]}`)) {
+              if (!statisticSpentCreated
+                && (`${statisticSpent.value}` !== `${Number(statistic[region][year][month].spent[indicator].replace(',', '.')) * valueMultiplier}`)) {
+                console.log('dublicate2');
                 const dublicateOfStatistic = await Region_statistic.create({
                   year: `${parseInt(year)}`,
                   month,
                   indicator_id: spentIndicator.id,
-                  value: statistic[region][year][month].spent[indicator],
-                  measurement_unit: 'млрд. руб.',
+                  value: `${Number(statistic[region][year][month].spent[indicator].replace(',', '.')) * valueMultiplier}`,
+                  measurement_unit: '₽',
                   region_id: regionRecord.reg_ID,
                   createdAt: new Date(),
                   updatedAt: new Date()
