@@ -133,6 +133,21 @@ const Map = (props) => {
             alignItems: 'flex-start',
           }}
         >
+          {statistic && statistic.values && statistic.values['0'] && statistic.values['0'].value
+            && (
+            <span style={
+              {
+                fontSize: `${legendFontSize}px`,
+                lineHeight: '20px',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                color: legendFontColor,
+              }
+            }
+            >
+              {`Всего в РФ ${addOrdinalToNumber(`${statistic.values['0'].value}`.replace(',', '.'))} ${((statistic && statistic.values && statistic.values['0'] && statistic.values['0'].measurement_unit) || '')}`}
+            </span>
+            )}
           <span style={
             {
               fontSize: `${legendFontSize}px`,
@@ -156,6 +171,15 @@ const Map = (props) => {
               marginTop: '6px',
               borderRadius: '2px',
             }}
+            />
+            <span
+              style={{
+                fontSize: '11px',
+                lineHeight: '16px',
+                fontStyle: 'normal',
+                fontWeight: 400,
+                color: '#909ebb',
+              }}
             />
             <span style={
               {

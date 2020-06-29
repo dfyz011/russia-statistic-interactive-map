@@ -306,9 +306,9 @@ exports.findByIndicatorsForMap = async (req, res) => {
         {
           model: Region,
           as: 'Region',
-          where: {
-            reg_type: 'Регион'
-          },
+          // where: {
+          //   reg_type: 'Регион'
+          // },
         },
         {
           model: Indicator,
@@ -321,6 +321,9 @@ exports.findByIndicatorsForMap = async (req, res) => {
       r[a.year] = r[a.year] || {};
       r[a.year][a.indicator_id] = r[a.year][a.indicator_id] || { min: Infinity, max: -Infinity, values: {} };
       r[a.year][a.indicator_id].values[a.Region.reg_alias_fias_id] = a;
+      if (a.Region.reg_type !== 'Регион') {
+        return r;
+      }
       const currentValue = parseFloat(`${a.value}`.replace(',', '.'));
       if (currentValue > r[a.year][a.indicator_id].max) {
         r[a.year][a.indicator_id].max = currentValue;
