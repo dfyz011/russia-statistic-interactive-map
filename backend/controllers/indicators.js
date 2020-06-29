@@ -1,6 +1,6 @@
 const db = require('../models');
 
-const { Indicator, Indicators_categories } = db;
+const { Indicator, Indicators_categories, Category } = db;
 const { Op } = db.Sequelize;
 
 exports.findAll = async (req, res) => {
@@ -8,7 +8,26 @@ exports.findAll = async (req, res) => {
     const { categories } = req.body;
     let indicators;
     if (categories && categories.length > 0) {
-      const categoriesFilter = { category_id: { [Op.in]: [...categories] } };
+      let allCat = [];
+      for (const cat of categories) {
+        const rowCat = await Category.findOne({
+          where: {
+            id: Number(cat)
+          },
+        });
+        if (!rowCat.category_id) {
+          const childCats = await Category.findAll({
+            where: {
+              category_id: cat
+            },
+          });
+          const childIds = childCats.map((el) => el.id);
+          allCat = [...allCat, ...childIds];
+        }
+        allCat = [...allCat, cat];
+        console.log('allCat', allCat);
+      }
+      const categoriesFilter = { category_id: { [Op.in]: [...allCat] } };
       const indicatorsFilter = {
         ...categoriesFilter,
       };

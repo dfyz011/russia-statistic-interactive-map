@@ -231,6 +231,20 @@ const getStatisticByIndicator = async (indicator) => {
         }
       });
       console.log('newIndicator.id', newIndicator.id);
+      if (!indicator.categories || (indicator.categories && indicator.categories.length === 0)) {
+        const [newIndicatorCategory, newIndicatorCategoryCreated] = await Indicators_categories.findOrCreate({
+          where: {
+            indicator_id: newIndicator.id,
+            category_id: mainCategory.id
+          },
+          defaults: {
+            indicator_id: newIndicator.id,
+            category_id: mainCategory.id,
+            createdAt: new Date(),
+            updatedAt: new Date()
+          }
+        });
+      }
       for (const category of indicator.categories) {
         const [newCategory, newCategoryCreated] = await Category.findOrCreate({
           where: {
@@ -340,10 +354,10 @@ const getAllStatistic = async () => {
       console.log(index);
       // https://fedstat.ru/indicator/40472
       // 52,21,55,103,116,128,137,167,168,210
-      if (index < 39) {
+      if (index < 102) {
         continue;
       }
-      if (index > 45) {
+      if (index > 130) {
         break;
       }
       const statistic = await getStatisticByIndicator(indicator);
